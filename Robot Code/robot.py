@@ -50,7 +50,6 @@ class MyRobot(wpilib.IterativeRobot):
     
 
     def autonomousPeriodic(self):
-
         #self.automodes.run()
         pass
 
