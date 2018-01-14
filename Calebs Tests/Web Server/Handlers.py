@@ -1,15 +1,26 @@
 import tornado.web
 import tornado.websocket
 
-class defaultHandler(tornado.web.RequestHandler):
-    def get(self):
+
+class DefaultHandler(tornado.web.RequestHandler):
+    def Get(self):
         self.render("Web/index.html")
 
 class EventSocket(tornado.websocket.WebSocketHandler):
-    def open(self):
+
+    eSockets = set()
+
+    def Open(self):
         print("The event handler Web Socket is open.")
-        while True:
-            msg = raw_input(">>:")
-            self.write_message(msg)
-    def close(self):
+        self.eSockets.add(self)
+
+    def Close(self):
         print("The event handler Web Socket is closed")
+        self.eSockets.remove(self)
+
+
+    @classmethod
+    def AlertClients(cls, label, value):
+        #send event to all open clients
+        for socket in cls.eSockets:
+            Socket.write_message(label + ":" + value)
