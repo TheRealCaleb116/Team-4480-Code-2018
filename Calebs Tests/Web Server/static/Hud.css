@@ -1,0 +1,48 @@
+/*Generic Slide Out Popout*/
+
+.SOP{
+    margin: 2px;
+    margin-bottom: 10px;
+    display: block;
+    width: 30%;
+    background-color: skyblue;
+    min-width: 230px;
+    max-width: 300px;
+    
+    border-radius: 10px;
+    position: relative;
+    
+    /*Location*/
+    left: -250px;
+}
+
+.SOP h2{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+.SOP p:first-of-type{
+    padding-left: 15px;
+    float: left;
+    width: 60%;
+}
+
+.SOP p:last-of-type{
+    float: left;
+    padding: 0px 5px;
+    width: 40%;
+}
+
+
+/*General styles*/
+img{
+    width: 100%;
+}
+
+.clearfix::after { 
+   content: " ";
+   display: block; 
+   height: 0; 
+   clear: both;
+}

@@ -17,7 +17,7 @@ def ServerCreate():
         (r"/", WH.DefaultHandler),
         (r"/EventHandler", WH.EventSocket)
     ],**settings)
-    
+
     app.listen(8888)
 
     ioLoop = tornado.ioloop.IOLoop.current()
