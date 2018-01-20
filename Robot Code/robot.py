@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Python3 Robot code: "Unititled"
-# 2017 - 2018, 4480 "Forty48ie" "UC-Botics"
-
+# 2018 - 2018, 4480 "Forty48ie" "UC-Botics"
+#
 
 import wpilib
 import wpilib.buttons
@@ -40,27 +40,41 @@ class MyRobot(wpilib.IterativeRobot):
         
        
        #Defining Variables
+        self.dm = True
 
 
         #Auto mode variables
-        #self.components = {
-         #   'drive': self.drive
-        #}
-        #self.automodes = AutonomousModeSelector('autonomous', self.components)
-    
+        self.components = {
+            'drive': self.drive
+        }
+        self.automodes = AutonomousModeSelector('autonomous', self.components)
+
 
     def autonomousPeriodic(self):
-        #self.automodes.run()
+        self.automodes.run()
         pass
 
+
     def teleopPeriodic(self):
-        
+
+
         self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
-
-
+       
+       
+        if self.xboxYbutton.get():
+            self.drive.flipflip()
+     
+        if self.xboxAbutton.get():
+            self.dm = False
+   
+        if self.xboxBbutton.get():
+            self.dm = True
+        if self.dm == True:
+            self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
+        if self.dm == False:
+            self.drive.arcadeDrive(self.xboxController.getX(), self.xboxController.getY())
 
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
 
- 
