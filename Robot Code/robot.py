@@ -52,7 +52,6 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousPeriodic(self):
         self.automodes.run()
-        pass
 
 
     def teleopPeriodic(self):
@@ -60,15 +59,13 @@ class MyRobot(wpilib.IterativeRobot):
 
         self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
        
-       
-        if self.xboxYbutton.get():
-            self.drive.flipflip()
-     
+]
         if self.xboxAbutton.get():
             self.dm = False
-   
         if self.xboxBbutton.get():
             self.dm = True
+
+
         if self.dm == True:
             self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
         if self.dm == False:
