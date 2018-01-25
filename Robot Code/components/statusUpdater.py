@@ -11,8 +11,14 @@ class StatusUpdater (object):
         self.robotClass = RC
         self.netTable = NT
 
-        #the subtable that will store our infor
+        #the subtable that will store our info
         self.data = self.netTable.getSubTable("Data")
+
+        #get current driver station instance
+        self.driverStation = wpilib.DriverStation.getInstance();
+
+        #Random Vars
+        self.bVoltage = -1;
 
     def UpdateStatus(self,phase):
         #Updates current phase period of play to network tables
@@ -26,4 +32,25 @@ class StatusUpdater (object):
             self.data.putNumber("GamePeriod",phase)
 
     def UpdateBatteryStatus(self):
-        robotClass
+        temp = self.driverStation.getBatteryVoltage()
+        if (self.bVoltage == temp):
+            return
+
+        self.bVoltage = temp;
+        #push value to data sub table
+        self.data.putNumber("batteryVoltage",temp)
+
+    def getAlliance(self):
+        allience = self.driverStation.getAlliance()
+
+        if (allience == DriverStation.Alliance.Blue):
+            self.data.putString("Allience","Blue")
+        elif (allience == DriverStation.Allience.Red):
+            self.data.putString("Allience","Red")
+        else:
+            raise Exception("This should have happened. Error in getAllience()")
+
+    def UpdateMatchTime(self):
+        temp = self.driverStation.getMatchTime()
+        self.data.putNumber("AproxMatchTime",temp)
+        
