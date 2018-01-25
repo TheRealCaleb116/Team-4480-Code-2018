@@ -13,32 +13,45 @@ import wpilib.drive
 import math
 import hal
 
+#HUD Imports
+import components.StatusUpdater as SU
 
 print (wpilib.__version__)
 
 class MyRobot(wpilib.IterativeRobot):
 
+    #Update Phase Status to NetworkTables
+    def disabledInit(self):
+        self.statUpdater.UpdateStatus(0)
+    def autonomousInit(self):
+        self.statUpdater.UpdateStatus(1)
+    def teleopInit(self):
+        self.statUpdater.UpdateStatus(2)
 
     def robotInit(self):
+        #networktables
+        self.netTable = networktables.getTable('SmartDashboard')
 
+        #Hud DataHandlers
+        self.statUpdater = SU(self,self.netTable)
 
         #Motors
         self.leftMotorInput = wpilib.Talon(1) #  AEN
         self.rightMotorInput = wpilib.Talon(2) # AEN
-     
+
         self.drive = wpilib.drive.DifferentialDrive(self.leftMotorInput, self.rightMotorInput)
-      
-      
+
+
         #Inputs
         self.xboxController = wpilib.Joystick(0)
         self.xboxAbutton = wpilib.buttons.JoystickButton(self.xboxController, 1)
         self.xboxBbutton = wpilib.buttons.JoystickButton(self.xboxController, 2)
         self.xboxYbutton = wpilib.buttons.JoystickButton(self.xboxController, 4)
-       
-       
+
+
        #Navigation and Logistics
-        
-       
+
+
        #Defining Variables
         self.dm = True
 
@@ -58,7 +71,7 @@ class MyRobot(wpilib.IterativeRobot):
 
 
         self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
-       
+
 ]
         if self.xboxAbutton.get():
             self.dm = False
@@ -74,4 +87,3 @@ class MyRobot(wpilib.IterativeRobot):
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
-
