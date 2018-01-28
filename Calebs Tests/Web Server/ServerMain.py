@@ -4,16 +4,26 @@ import tornado.websocket
 import os
 
 import Handlers as WH
+from networktables import NetworkTables
 
-def CheckEvents():
-    pass
+#import py networktables bindings
+import pynetworktables2js.tornado_handlers as networkTablesToJS
+
+#default robotIP
+robotIP = "127.0.0.1"
+
+def InitNetworkTables():
+    print("Connecting to network tables")
+    NetworkTables.initialize(server=robotIP)
 
 def ServerCreate():
     settings = {
         "static_path": os.path.join(os.path.dirname(__file__), "static")
     }
+    #startup networkTables for networktables2js
+    InitNetworkTables()
 
-    app = tornado.web.Application([
+    app = tornado.web.Application(networkTablesToJS.get_handlers() + [
         (r"/", WH.DefaultHandler),
         (r"/EventHandler", WH.EventSocket)
     ],**settings)
@@ -22,8 +32,6 @@ def ServerCreate():
 
     ioLoop = tornado.ioloop.IOLoop.current()
 
-    #run this function every 1000ms
-    #ioLoop.PeriodicCallback(CheckEvents,1000)
 
     #start processing loop
     ioLoop.start()

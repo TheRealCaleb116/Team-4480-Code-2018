@@ -6,15 +6,33 @@
     <meta charset="utf-8" />
 
     <link href="static/reset.css" rel="stylesheet">
-    <link href="/static/Hud.css" rel="stylesheet">
+    <link href="static/Hud.css" rel="stylesheet">
     
     <script src="static/jquery-3.2.1.min.js" defer></script>
     <script src="/static/eventHandler.js" defer></script>
+    <script src="static/Hud.js"></script>
     
+    <!--Connect To Py Networktables-->
+    <script src="/networktables/networktables.js"></script>
 
 </head>
 
 <body>
+    <div id="header" class="clearfix">
+        <section id="team">
+            <h1>Team 4480</h1>
+        </section>
+        <section id="period">
+            
+            <h2>Game Period: Unknown</h2>
+        </section>
+        <section id="timer">
+            <h2>(MatchTime)</h2>
+        </section>
+        
+    </div>
+    
+    
     <div class="SOP clearfix" id="templatePopup">
         <h2>This is a template Popup / Event</h2>
         <p>

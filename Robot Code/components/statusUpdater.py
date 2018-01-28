@@ -53,4 +53,3 @@ class StatusUpdater (object):
     def UpdateMatchTime(self):
         temp = self.driverStation.getMatchTime()
         self.data.putNumber("AproxMatchTime",temp)
-        

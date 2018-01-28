@@ -1,6 +1,6 @@
 var webSocket;
 
-webSocket = new WebSocket("ws://localhost:8888/EventHandler")
+webSocket = new WebSocket("ws://localhost:8888/EventHandler");
 
 Popouts = [];
 
@@ -26,11 +26,11 @@ class Popout{
     }
     
     animation(){
-        $(this.id).animate({
-            left: 0;
-        },
-        "slow"
-        )
+//        $(this.id).animate({
+//            left: 0;
+//        },
+//        "slow"
+//        )
     }
     /*Getters and Setters*/
     get id(){

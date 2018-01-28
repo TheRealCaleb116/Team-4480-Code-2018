@@ -22,11 +22,16 @@ class MyRobot(wpilib.IterativeRobot):
 
     #Update Phase Status to NetworkTables
     def disabledInit(self):
+        #Update Allience
+        self.statUpdater.getAlliance()
+
         self.statUpdater.UpdateStatus(0)
     def autonomousInit(self):
         self.statUpdater.UpdateStatus(1)
+        self.UpdateMatchTime()
     def teleopInit(self):
         self.statUpdater.UpdateStatus(2)
+        self.UpdateMatchTime()
 
     def robotInit(self):
         #networktables
@@ -64,11 +69,17 @@ class MyRobot(wpilib.IterativeRobot):
 
 
     def autonomousPeriodic(self):
+        #Hud Data Update
+        self.UpdateMatchTime()
+        self.statUpdater.UpdateBatteryStatus()
+
         self.automodes.run()
 
 
     def teleopPeriodic(self):
-
+        #Data Updaters
+        self.statUpdater.UpdateBatteryStatus()
+        self.UpdateMatchTime();
 
         self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
 
