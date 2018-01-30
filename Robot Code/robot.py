@@ -34,6 +34,8 @@ class MyRobot(wpilib.IterativeRobot):
         self.xboxYbutton = wpilib.buttons.JoystickButton(self.xboxController, 4)
 
 
+        # pathfinder stuff
+
         points = [
             pf.Waypoint(-4, -1, math.radians(-45.0)),
             pf.Waypoint(-2, -2, 0),
@@ -46,10 +48,8 @@ class MyRobot(wpilib.IterativeRobot):
         # Wheelbase Width = 0.5m
         modifier = pf.modifiers.TankModifier(trajectory).modify(0.5)
 
-        # Do something with the new Trajectories...
         left = modifier.getLeftTrajectory()
         right = modifier.getRightTrajectory()
-        #Navigation and Logistics
 
         self.left_follower = pf.followers.EncoderFollower(left)
         self.right_follower = pf.followers.EncoderFollower(right)
@@ -57,11 +57,9 @@ class MyRobot(wpilib.IterativeRobot):
         self.left_follower.configureEncoder(2, 1000, 5.75)
         self.left_follower.configurePIDVA(1.0, 0.0, 0.0, 1 / 1.7, 0)
 
-        #Defining Variables
-        self.dm = True
-
+        # simulating an encoder position ticks
         self.counter = 100
-        #Auto mode variables
+
         self.components = {
             'drive': self.drive
         }
@@ -73,7 +71,7 @@ class MyRobot(wpilib.IterativeRobot):
 
 
     def teleopPeriodic(self):
-
+        self.counter+=100
         print (self.left_follower.calculate(self.counter))
 
         self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
