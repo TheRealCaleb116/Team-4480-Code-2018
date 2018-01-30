@@ -13,7 +13,6 @@ import networktables
 from wpilib.drive import DifferentialDrive
 import wpilib.drive
 import math
-import hal
 
 class MyRobot(wpilib.IterativeRobot):
 
@@ -56,12 +55,12 @@ class MyRobot(wpilib.IterativeRobot):
         self.right_follower = pf.followers.EncoderFollower(right)
 
         self.left_follower.configureEncoder(2, 1000, 5.75)
-        self.left_follower.configurePIDVA(1.0, 0.0, 0.0, 1 / 2.0, 0)
+        self.left_follower.configurePIDVA(1.0, 0.0, 0.0, 1 / 1.7, 0)
 
         #Defining Variables
         self.dm = True
 
-
+        self.counter = 100
         #Auto mode variables
         self.components = {
             'drive': self.drive
@@ -74,8 +73,8 @@ class MyRobot(wpilib.IterativeRobot):
 
 
     def teleopPeriodic(self):
-        something = int(self.xboxController.getY()*10)
-        print (self.left_follower.calculate(random.randint(1,20)))
+
+        print (self.left_follower.calculate(self.counter))
 
         self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
 
