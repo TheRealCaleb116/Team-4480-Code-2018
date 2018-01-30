@@ -25,7 +25,7 @@ class StatusUpdater (object):
         #0 - Disabled
         #1 - Autonomous
         #2 - teleop
-        if (phase < 0 || phase > 2):
+        if (phase < 0 or phase > 2):
             raise Exception("You miss implamented the Update Status Method.")
 
         else:
@@ -41,12 +41,12 @@ class StatusUpdater (object):
         self.data.putNumber("batteryVoltage",temp)
 
     def getAlliance(self):
-        allience = self.driverStation.getAlliance()
+        alliance = self.driverStation.getAlliance()
 
-        if (allience == DriverStation.Alliance.Blue):
-            self.data.putString("Allience","Blue")
-        elif (allience == DriverStation.Allience.Red):
-            self.data.putString("Allience","Red")
+        if (alliance == self.driverStation.Alliance.Blue):
+            self.data.putString("Alliance","Blue")
+        elif (alliance == self.driverStation.Alliance.Red):
+            self.data.putString("Alliance","Red")
         else:
             raise Exception("This should have happened. Error in getAllience()")
 

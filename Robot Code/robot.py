@@ -7,14 +7,14 @@ import wpilib
 import wpilib.buttons
 from robotpy_ext.autonomous import AutonomousModeSelector
 from robotpy_ext.common_drivers import units, navx
-import networktables
+from networktables import NetworkTables
 from wpilib.drive import DifferentialDrive
 import wpilib.drive
 import math
 import hal
 
 #HUD Imports
-import components.StatusUpdater as SU
+from components import statusUpdater as SU
 
 print (wpilib.__version__)
 
@@ -28,17 +28,17 @@ class MyRobot(wpilib.IterativeRobot):
         self.statUpdater.UpdateStatus(0)
     def autonomousInit(self):
         self.statUpdater.UpdateStatus(1)
-        self.UpdateMatchTime()
+        self.statUpdater.UpdateMatchTime()
     def teleopInit(self):
         self.statUpdater.UpdateStatus(2)
-        self.UpdateMatchTime()
+        self.statUpdater.UpdateMatchTime()
 
     def robotInit(self):
         #networktables
-        self.netTable = networktables.getTable('SmartDashboard')
+        self.netTable = NetworkTables.getTable('SmartDashboard')
 
         #Hud DataHandlers
-        self.statUpdater = SU(self,self.netTable)
+        self.statUpdater = SU.StatusUpdater(self,self.netTable)
 
         #Motors
         self.leftMotorInput = wpilib.Talon(1) #  AEN
@@ -70,7 +70,7 @@ class MyRobot(wpilib.IterativeRobot):
 
     def autonomousPeriodic(self):
         #Hud Data Update
-        self.UpdateMatchTime()
+        self.statUpdater.UpdateMatchTime()
         self.statUpdater.UpdateBatteryStatus()
 
         self.automodes.run()
@@ -79,11 +79,11 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
         #Data Updaters
         self.statUpdater.UpdateBatteryStatus()
-        self.UpdateMatchTime();
+        self.statUpdater.UpdateMatchTime();
 
         self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
 
-]
+
         if self.xboxAbutton.get():
             self.dm = False
         if self.xboxBbutton.get():
