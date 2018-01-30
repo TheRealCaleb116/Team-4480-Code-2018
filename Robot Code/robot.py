@@ -5,6 +5,7 @@
 
 import wpilib
 import wpilib.buttons
+import pathfinder as pf
 from robotpy_ext.autonomous import AutonomousModeSelector
 from robotpy_ext.common_drivers import units, navx
 import networktables
@@ -12,9 +13,6 @@ from wpilib.drive import DifferentialDrive
 import wpilib.drive
 import math
 import hal
-
-
-print (wpilib.__version__)
 
 class MyRobot(wpilib.IterativeRobot):
 
@@ -25,21 +23,38 @@ class MyRobot(wpilib.IterativeRobot):
         #Motors
         self.leftMotorInput = wpilib.Talon(1) #  AEN
         self.rightMotorInput = wpilib.Talon(2) # AEN
-     
+
         self.drive = wpilib.drive.DifferentialDrive(self.leftMotorInput, self.rightMotorInput)
-      
-      
+
+
         #Inputs
         self.xboxController = wpilib.Joystick(0)
         self.xboxAbutton = wpilib.buttons.JoystickButton(self.xboxController, 1)
         self.xboxBbutton = wpilib.buttons.JoystickButton(self.xboxController, 2)
         self.xboxYbutton = wpilib.buttons.JoystickButton(self.xboxController, 4)
-       
-       
-       #Navigation and Logistics
-        
-       
-       #Defining Variables
+
+
+        points = [
+            pf.Waypoint(-4, -1, math.radians(-45.0)),
+            pf.Waypoint(-2, -2, 0),
+            pf.Waypoint(0, 0, 0),
+        ]
+
+        info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC,
+                                       pf.SAMPLES_HIGH, 0.05, 1.7, 2.0, 60.0)
+
+        # Wheelbase Width = 0.5m
+        modifier = pf.modifiers.TankModifier(trajectory).modify(0.5)
+
+        # Do something with the new Trajectories...
+        left = modifier.getLeftTrajectory()
+        right = modifier.getRightTrajectory()
+
+        print (left)
+        #Navigation and Logistics
+
+
+        #Defining Variables
         self.dm = True
 
 
@@ -56,22 +71,8 @@ class MyRobot(wpilib.IterativeRobot):
 
     def teleopPeriodic(self):
 
-
         self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
-       
-]
-        if self.xboxAbutton.get():
-            self.dm = False
-        if self.xboxBbutton.get():
-            self.dm = True
-
-
-        if self.dm == True:
-            self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
-        if self.dm == False:
-            self.drive.arcadeDrive(self.xboxController.getX(), self.xboxController.getY())
 
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
-
