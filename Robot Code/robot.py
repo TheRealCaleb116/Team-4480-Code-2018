@@ -6,6 +6,7 @@
 import wpilib
 import wpilib.buttons
 import pathfinder as pf
+import random
 from robotpy_ext.autonomous import AutonomousModeSelector
 from robotpy_ext.common_drivers import units, navx
 import networktables
@@ -49,10 +50,13 @@ class MyRobot(wpilib.IterativeRobot):
         # Do something with the new Trajectories...
         left = modifier.getLeftTrajectory()
         right = modifier.getRightTrajectory()
-
-        print (left)
         #Navigation and Logistics
 
+        self.left_follower = pf.followers.EncoderFollower(left)
+        self.right_follower = pf.followers.EncoderFollower(right)
+
+        self.left_follower.configureEncoder(2, 1000, 5.75)
+        self.left_follower.configurePIDVA(1.0, 0.0, 0.0, 1 / 2.0, 0)
 
         #Defining Variables
         self.dm = True
@@ -70,6 +74,8 @@ class MyRobot(wpilib.IterativeRobot):
 
 
     def teleopPeriodic(self):
+        something = int(self.xboxController.getY()*10)
+        print (self.left_follower.calculate(random.randint(1,20)))
 
         self.drive.tankDrive(self.xboxController.getY(), self.xboxController.getRawAxis(5))
 
