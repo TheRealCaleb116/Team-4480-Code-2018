@@ -2,19 +2,35 @@
 $(document).ready(function(){
     
     NetworkTables.addWsConnectionListener(function(connected){
+/*
         console.log("Connected to websocket. DATA: " + connected);
+*/
     },true);
     
     NetworkTables.addRobotConnectionListener(function(connected){
+/*
        console.log("Robot Has connected to networktables. Data sent: " + connected); 
+*/
     },true);
     
     
+    basePath = "/SmartDashboard/Data/";
+    
     /*Global NT Listener*/
     NetworkTables.addGlobalListener(function(key,value, isNew){
-        if (key == "Alliance"){
-        console.log("Global Listener Call");
-            UpdateValue(value,"allianceValue");
+/*
+        console.log("Key Triggered ----  " + key);
+*/
+        
+        if (key == basePath + "Alliance"){
+            UpdateAlliance(value);
+            
+        }else if(key == basePath + "GamePeriod"){
+            UpdateValue(value,"periodValue");
+            
+        }else if(key == basePath + "AproxMatchTime"){
+            UpdateValue(value,"timerValue");
+
         }
 
         
@@ -28,6 +44,18 @@ $(document).ready(function(){
         document.getElementById(ID).innerHTML = value;
     }
     
+    function UpdateAlliance(value){
+        if (value=="Red"){
+            
+            document.getElementById("allianceValue").innerHTML = value;
+            document.getElementById("team").style.backgroundColor = "Red";
+            
+        }else{
+            
+            document.getElementById("allianceValue").innerHTML = value;
+            document.getElementById("team").style.backgroundColor = "Blue";
+        }
+    }
     
 
     

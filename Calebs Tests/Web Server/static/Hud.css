@@ -3,7 +3,9 @@ h1, h2{
     font-family: arial;
 }
 
-
+.inlineDiv{
+    display: inline;
+}
 
 /*Generic Slide Out Popout*/
 
@@ -66,25 +68,31 @@ img{
 div#header{
     background-color: grey;
     padding: 2px;
+    display: flex;
+    flex-flow: row nowrap;
 }
+
+
 div#header section{
     display: block;
     float: left;
     background-color: lightgray;
     padding: 10px 20px;
+    border: 2px solid black;
+    
 }
 section#team{
-    border-right: solid 2px black;
-    width: 23%
+    flex: 0 0 300px;
+
 }
 section#period{
-    width: 52%;
+    flex: 1 1 400px;
+    
+}
+section#period h2{
+    padding-left: 10%;
 }
 section#timer{
-    border-left: solid 2px black;
-    width: 25%;
+    flex: 0 1 250px;
     text-align: center;
-}
-section#team h1, section#period h2{
-    padding-left: 11%;
 }

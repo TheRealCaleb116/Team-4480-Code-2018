@@ -29,7 +29,14 @@ class StatusUpdater (object):
             raise Exception("You miss implamented the Update Status Method.")
 
         else:
-            self.data.putNumber("GamePeriod",phase)
+            if (phase == 0):
+                self.data.putString("GamePeriod","Disabled")
+            elif(phase == 1):
+                self.data.putString("GamePeriod","Autonomous")
+
+            elif(phase == 2):
+                self.data.putString("GamePeriod","Teleop")
+
 
     def UpdateBatteryStatus(self):
         temp = self.driverStation.getBatteryVoltage()
