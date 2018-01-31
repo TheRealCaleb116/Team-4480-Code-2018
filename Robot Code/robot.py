@@ -26,6 +26,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.statUpdater.getAlliance()
 
         self.statUpdater.UpdateStatus(0)
+        self.statUpdater.UpdateMatchTime()
     def autonomousInit(self):
         self.statUpdater.UpdateStatus(1)
         self.statUpdater.UpdateMatchTime()
