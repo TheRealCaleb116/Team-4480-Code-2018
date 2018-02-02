@@ -9,7 +9,7 @@
 import wpilib
 import wpilib.buttons
 import ctre
-from wpilib.drive import DifferentialDrive        
+from wpilib.drive import DifferentialDrive
 class MyRobot(wpilib.IterativeRobot):
 
     def robotInit(self):
@@ -19,7 +19,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.motor2 = ctre.WPI_TalonSRX(2)
         self.motor3 = ctre.WPI_TalonSRX(9)
         self.motor4 = ctre.WPI_TalonSRX(10)
-        
+
         #Intake Motors
         self.stage1Left = ctre.WPI_TalonSRX(3)
         self.stage1Right = ctre.WPI_TalonSRX(4)
@@ -27,7 +27,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.stage2Right = ctre.WPI_TalonSRX(6)
         self.stage3Left = ctre.WPI_TalonSRX(7)
         self.stage3Right = ctre.WPI_TalonSRX(8)
-        
+
         #User Inputs
         self.xboxController = wpilib.XboxController(0)
 
@@ -39,13 +39,13 @@ class MyRobot(wpilib.IterativeRobot):
         self.leftIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage2Left, self.stage3Left)
 
     def teleopPeriodic(self):
-        
+
         #Drive
         self.robotDrive.arcadeDrive(self.xboxController.getX(0), self.xboxController.getY(0))
 
         #Intake
         self.rightIntakeMotors.set(self.xboxController.getY(1))
         self.leftIntakeMotors.set(self.xboxController.getY(1))
-      
+
 if __name__ == "__main__":
     wpilib.run(MyRobot)
