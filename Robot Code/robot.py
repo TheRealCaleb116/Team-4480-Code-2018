@@ -28,6 +28,9 @@ class MyRobot(wpilib.IterativeRobot):
         self.stage3Left = ctre.WPI_TalonSRX(7)
         self.stage3Right = ctre.WPI_TalonSRX(8)
 
+        #Shifters
+        self.shifter = wpilib.DoubleSolenoid(2,3)
+        
         #User Inputs
         self.xboxController = wpilib.XboxController(0)
 
@@ -46,6 +49,12 @@ class MyRobot(wpilib.IterativeRobot):
         #Intake
         self.rightIntakeMotors.set(self.xboxController.getY(1))
         self.leftIntakeMotors.set(self.xboxController.getY(1))
+
+        #Shifting
+        if self.xboxController.getAButtonPressed():
+            self.shifter.set(wpilib.DoubleSolenoid.Value.kForward)
+        if self.xboxController.getBButtonPressed():
+            self.shifter.set(wpilib.DoubleSolenoid.Value.kReverse)
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
