@@ -29,7 +29,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.stage3Right = ctre.WPI_TalonSRX(8)
 
         #Shifters
-        self.shifter = wpilib.DoubleSolenoid(2,3)
+        self.shifter = wpilib.DoubleSolenoid(1,2)
         
         #User Inputs
         self.xboxController = wpilib.XboxController(0)
