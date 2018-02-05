@@ -1,2 +1,2 @@
 python serverMain.py
-echo "Crash wait"
+read -p "Press enter to continue"
