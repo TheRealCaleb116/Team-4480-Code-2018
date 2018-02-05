@@ -71,15 +71,15 @@ class MyRobot(wpilib.IterativeRobot):
         self.shifter = wpilib.DoubleSolenoid(1,2)
         
         #User Inputs
-        self.xboxController = wpilib.XboxController(0)
-        #self.playerTwo = wpilib.XboxController(1)
+        self.playerOne = wpilib.XboxController(0)
+        self.playerTwo = wpilib.XboxController(1)
         
         #Setup Logic
         self.rightDriveMotors = wpilib.SpeedControllerGroup(self.motor3,self.motor4)
         self.leftDriveMotors = wpilib.SpeedControllerGroup(self.motor1,self.motor2)
         self.robotDrive = DifferentialDrive(self.leftDriveMotors, self.rightDriveMotors)
-        self.rightIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Right, self.stage2Right, self.stage3Right)
-        self.leftIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage2Left, self.stage3Left)
+        self.rightLowerIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Right, self.stage2Right)
+        self.leftLowerIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage2Left)
 
         if wpilib.SolenoidBase.getPCMSolenoidVoltageStickyFault(0) == True:
             clearAllPCMStickyFaults(0)
@@ -102,26 +102,26 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
 
         #Drive
-        self.robotDrive.arcadeDrive(self.xboxController.getX(0), self.xboxController.getY(0))
+        self.robotDrive.arcadeDrive(self.playerOne.getX(0), self.playerOne.getY(0))
 
         #Intake
-        self.rightIntakeMotors.set(self.xboxController.getY(1))
-        self.leftIntakeMotors.set(self.xboxController.getY(1))
-        
+        if self.playerTwo.getTriggerAxis(0) >= 0.1:
+            self.leftLowerIntakeMotors.set(self.playerTwo.getTriggerAxis(0))
+            self.rightLowerIntakeMotors.set(self.playerTwo.getTriggerAxis(0))
+        if self.playerTwo.getTriggerAxis(1) >= 0.1:
+            self.rightLowerIntakeMotors.set(self.playerTwo.getTriggerAxis(1))
+            self.leftLowerIntakeMotors.set(self.playerTwo.getTriggerAxis(1))
+        self.stage3Left.set(self.playerTwo.getY(0))
+        self.stage3Right.set(self.playerTwo.getY(0))
+            
         #Pan Arms
-        if self.xboxController.getBumperPressed(0):
-            self.leftPanArm.set(.75)
-        elif self.xboxController.getTriggerAxis(0) >= 0.0:
-            self.leftPanArm.set(-.75 * self.xboxController.getTriggerAxis(0))
-        if self.xboxController.getBumperPressed(1):
-            self.rightPanArm.set(-.75)
-        elif self.xboxController.getTriggerAxis(1) <= 0.05:
-            self.rightPanArm.set(.75 * self.xboxController.getTriggerAxis(1))
+        self.rightPanArm.set(0.5 * self.playerTwo.getX(1))
+        self.leftPanArm.set(0.5 * self.playerTwo.getX(0))
 
         #Shifting
-        if self.xboxController.getAButtonPressed():
+        if self.playerOne.getAButtonPressed():
             self.shifter.set(wpilib.DoubleSolenoid.Value.kForward)
-        if self.xboxController.getBButtonPressed():
+        if self.playerOne.getBButtonPressed():
             self.shifter.set(wpilib.DoubleSolenoid.Value.kReverse)
 
 if __name__ == "__main__":
