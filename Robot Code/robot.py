@@ -82,7 +82,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.leftLowerIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage2Left)
 
         if wpilib.SolenoidBase.getPCMSolenoidVoltageStickyFault(0) == True:
-            clearAllPCMStickyFaults(0)
+            wpilib.SolenoidBase.clearAllPCMStickyFaults(0)
 
         #Auto mode variables
         self.components = {
@@ -113,7 +113,7 @@ class MyRobot(wpilib.IterativeRobot):
             self.leftLowerIntakeMotors.set(self.playerTwo.getTriggerAxis(1))
         self.stage3Left.set(self.playerTwo.getY(0))
         self.stage3Right.set(self.playerTwo.getY(0))
-            
+
         #Pan Arms
         self.rightPanArm.set(0.5 * self.playerTwo.getX(1))
         self.leftPanArm.set(0.5 * self.playerTwo.getX(0))
