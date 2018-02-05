@@ -42,7 +42,6 @@ class MyRobot(wpilib.IterativeRobot):
         self.statUpdater.UpdateMatchTime()
 
     def robotInit(self):
-        
         #Networktables
         self.netTable = NetworkTables.getTable('SmartDashboard')
 
@@ -102,7 +101,9 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
 
         #Drive
-        self.robotDrive.arcadeDrive(self.playerOne.getX(0), self.playerOne.getY(0))
+        self.robotDrive.curvatureDrive(self.playerOne.getY(0), self.playerOne.getX(1), True)
+        
+        #self.robotDrive.arcadeDrive(self.playerOne.getX(0), self.playerOne.getY(0))
 
         #Intake
         if self.playerTwo.getTriggerAxis(0) >= 0.1:
