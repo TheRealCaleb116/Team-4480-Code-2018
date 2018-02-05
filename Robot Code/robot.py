@@ -64,7 +64,7 @@ class MyRobot(wpilib.IterativeRobot):
 
         #Pan Arm Controls
         self.leftPanArm = wpilib.PWMVictorSPX(1)
-        self.rightPanArm = wpilib.PWMVictorSPX(4)
+        self.rightPanArm = wpilib.PWMVictorSPX(0)
 
         #Shifters
         self.shifter = wpilib.DoubleSolenoid(1,2)
@@ -101,23 +101,32 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
 
         #Drive
-        self.robotDrive.curvatureDrive(self.playerOne.getY(0), self.playerOne.getX(1), True)
+        self.robotDrive.curvatureDrive(self.playerOne.getX(1) * -1, self.playerOne.getY(0), True)
         
         #self.robotDrive.arcadeDrive(self.playerOne.getX(0), self.playerOne.getY(0))
 
         #Intake
-        if self.playerTwo.getTriggerAxis(0) >= 0.1:
-            self.leftLowerIntakeMotors.set(self.playerTwo.getTriggerAxis(0))
-            self.rightLowerIntakeMotors.set(self.playerTwo.getTriggerAxis(0))
-        if self.playerTwo.getTriggerAxis(1) >= 0.1:
-            self.rightLowerIntakeMotors.set(self.playerTwo.getTriggerAxis(1))
-            self.leftLowerIntakeMotors.set(self.playerTwo.getTriggerAxis(1))
-        self.stage3Left.set(self.playerTwo.getY(0))
-        self.stage3Right.set(self.playerTwo.getY(0))
-
+        if self.playerTwo.getTriggerAxis(0):
+            self.leftLowerIntakeMotors.set(-1)
+            self.rightLowerIntakeMotors.set(1)
+        elif self.playerTwo.getTriggerAxis(1):
+            self.rightLowerIntakeMotors.set(-1)
+            self.leftLowerIntakeMotors.set(1)
+        else:
+            self.rightLowerIntakeMotors.set(0)
+            self.leftLowerIntakeMotors.set(0)
+        if self.playerTwo.getAButton():
+            self.stage3Left.set(1)
+            self.stage3Right.set(-1)
+        elif self.playerTwo.getYButton():
+            self.stage3Left.set(-1)
+            self.stage3Right.set(1)
+        else:
+            self.stage3Left.set(0)
+            self.stage3Right.set(0)
         #Pan Arms
-        self.rightPanArm.set(0.5 * self.playerTwo.getX(1))
-        self.leftPanArm.set(0.5 * self.playerTwo.getX(0))
+        self.rightPanArm.set(0.5 * self.playerTwo.getX(0))
+        self.leftPanArm.set(0.5 * self.playerTwo.getX(1))
 
         #Shifting
         if self.playerOne.getAButtonPressed():
