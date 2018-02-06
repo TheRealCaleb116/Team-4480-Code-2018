@@ -22,11 +22,10 @@ class MyRobot(wpilib.IterativeRobot):
         self.controller = wpilib.Joystick(0)
 
 
-        # pathfinder stuff
+        # path for going forward 10 units
         points = [
-            pf.Waypoint(-4, -1, math.radians(-45.0)),
-            pf.Waypoint(-2, -2, 0),
             pf.Waypoint(0, 0, 0),
+            pf.Waypoint(10, 0, 0)
         ]
 
         info, trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC,
@@ -38,10 +37,10 @@ class MyRobot(wpilib.IterativeRobot):
         left = modifier.getLeftTrajectory()
         right = modifier.getRightTrajectory()
 
-        self.left_follower = pf.followers.DistanceFollower(left)
-        self.right_follower = pf.followers.DistanceFollower(right)
+        self.left_follower = pf.followers.EncoderFollower(left)
+        self.right_follower = pf.followers.EncoderFollower(right)
 
-        #self.left_follower.configureEncoder(2, 1000, 5.75)
+        self.left_follower.configureEncoder(2, 1000, 5.75)
         self.left_follower.configurePIDVA(5.0, 0.0, 0.0, 1 / 20, 0)
 
         #self.right_follower.configureEncoder(2, 1000, 5.75)
@@ -53,7 +52,12 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
 
         self.counter+=1
-        print (self.left_follower.calculate(self.counter))
+
+        # so I don't keep on seeing zeros
+
+        a = (self.left_follower.calculate(self.counter))
+        if a != 0.0:
+            print (a)
 
         self.drive.tankDrive(self.controller.getY(), self.controller.getRawAxis(5))
 
