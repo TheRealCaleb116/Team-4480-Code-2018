@@ -1,19 +1,16 @@
-'''
 #!/usr/bin/env python3
 import wpilib
 
 class Drive(object):
 
-# Got to put all drive related information here for futher use
-
-
-    def __init__(self, robotDrive, xboxController, navx):
-
-        self.xboxController = xboxController
+    def __init__(self, robotDrive, navx, lEncoder, rEncoder, shifter):
+        
+        self.lEncoder = lEncoder
+        self.rEncoder = rEncoder
         self.robotDrive = robotDrive
         self.gyro = navx
-    
-    
+        self.shifter = shifter
+        self.gearbox = False
         kP = 0.01
         kI = 0.0001
         
@@ -23,27 +20,18 @@ class Drive(object):
         turnController.setContinuous(True)
         self.turnController = turnController
 
-    
-    
-  
-    
-    
     def getYaw(self):
         return self.gyro.getYaw()
 
-    def customDrive(self, posX, posY, posT, mode): #current positions, X, Y, and Throttle
-       
-        if self.turnController.isEnable() and not self.turnController.onTarget():
+    def driveMeBoi(self, posX, posY): #current positions, X, Y
+        self.funcShifter()
+        if self.turnController.isEnabled() and not self.turnController.onTarget():
             goRotation = self.rotate180
         else:
-            self.pidEnable(False)
+            self.pidEnabled(False)
             goRotation = posX
-       
-        if mode:
-            self.robotDrive.arcadeDrive(goRotation, posY, True)
-     #   else:
-      #      self.robotDrive.tankDrive(self.xboxController.getRawAxis(5), posY, True)
-
+    
+        self.robotDrive.arcadeDrive(goRotation * -1, posY, True)
             
     def blackbox(self, output):
         self.rotate180 = output
@@ -56,13 +44,20 @@ class Drive(object):
         else:
             self.setPoint(currentAngle + 180)
 
-    def pidEnable(self, isEnable):
-        if isEnable:
+    def pidEnabled(self, isEnabled):
+        if isEnabled:
             self.turnController.enable()
         else:
             self.turnController.disable()
 
+    def getEncoders(self):
+        return (self.lEncoder.getQuadratureVelocity(), self.rEncoder.getQuadratureVelocity())
 
-DRIVE.py is INCOMPLETE
-'''
+    def funcShifter(self):
+        if self.gearbox == True:
+            self.shifter.set(wpilib.DoubleSolenoid.Value.kForward)
+        elif self.gearbox == False:
+            self.shifter.set(wpilib.DoubleSolenoid.Value.kReverse)
+
+
 

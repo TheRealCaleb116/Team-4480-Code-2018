@@ -20,7 +20,7 @@ from robotpy_ext.common_drivers import units, navx
 from robotpy_ext.autonomous import AutonomousModeSelector
 from components import statusUpdater as SU
 print (wpilib.__version__)
-
+from components import drive
 
 class MyRobot(wpilib.IterativeRobot):
 
@@ -73,6 +73,12 @@ class MyRobot(wpilib.IterativeRobot):
         self.playerOne = wpilib.XboxController(0)
         self.playerTwo = wpilib.XboxController(1)
         
+        #Navx
+        self.navx = navx.AHRS.create_spi()
+        
+        #Encoders
+        
+        
         #Setup Logic
         self.rightDriveMotors = wpilib.SpeedControllerGroup(self.motor3,self.motor4)
         self.leftDriveMotors = wpilib.SpeedControllerGroup(self.motor1,self.motor2)
@@ -82,7 +88,10 @@ class MyRobot(wpilib.IterativeRobot):
 
         if wpilib.SolenoidBase.getPCMSolenoidVoltageStickyFault(0) == True:
             wpilib.SolenoidBase.clearAllPCMStickyFaults(0)
-
+        
+        #Drive.py init
+        self.drive = drive.Drive(self.robotDrive, self.navx, self.motor1, self.motor3, self.shifter)
+        
         #Auto mode variables
         self.components = {
             'drive': self.robotDrive
@@ -99,12 +108,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.automodes.run()
 
     def teleopPeriodic(self):
-
-        #Drive
-        self.robotDrive.curvatureDrive(self.playerOne.getX(1) * -1, self.playerOne.getY(0), True)
         
-        #self.robotDrive.arcadeDrive(self.playerOne.getX(0), self.playerOne.getY(0))
-
         #Intake
         if self.playerTwo.getTriggerAxis(0):
             self.leftLowerIntakeMotors.set(-1)
@@ -128,11 +132,14 @@ class MyRobot(wpilib.IterativeRobot):
         self.rightPanArm.set(0.5 * self.playerTwo.getX(0))
         self.leftPanArm.set(0.5 * self.playerTwo.getX(1))
 
+        #Drive
+        self.drive.driveMeBoi(self.playerOne.getX(0), self.playerOne.getY(0))
+
         #Shifting
-        if self.playerOne.getAButtonPressed():
-            self.shifter.set(wpilib.DoubleSolenoid.Value.kForward)
-        if self.playerOne.getBButtonPressed():
-            self.shifter.set(wpilib.DoubleSolenoid.Value.kReverse)
+        if self.playerOne.getAButton():
+            self.drive.gearbox = True
+        elif self.playerOne.getBButton():
+            self.drive.gearbox = False
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
