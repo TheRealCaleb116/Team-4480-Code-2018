@@ -28,7 +28,7 @@ def StartRobotChecker():
 
 def SubCheck():
     if (Q.empty() == False):
-        
+
         for x in range(0, Q.qsize()):
             msg = Q.get()
             WH.EventSocket.AlertClients(msg)
@@ -53,7 +53,7 @@ def ServerCreate():
 
     ioLoop = tornado.ioloop.IOLoop.current()
 
-    tornado.ioloop.PeriodicCallback(SubCheck,1000).start()
+    tornado.ioloop.PeriodicCallback(SubCheck,500).start()
 
 
     #start processing loop

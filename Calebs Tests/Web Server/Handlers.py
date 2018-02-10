@@ -26,4 +26,4 @@ class EventSocket(tornado.websocket.WebSocketHandler):
         print("Sending Event MSG: " + value)
 
         for socket in cls.eSockets:
-            Socket.write_message(value)
+            socket.write_message(value)

@@ -19,13 +19,13 @@ h1, h2{
     max-width: 300px;
     
     border-radius: 10px;
-    position: relative;
+    position: fixed;
+    
     
     /*Location*/
-    top: 50px;
-/*
-    left: -300px;
-*/
+    right: -350px;
+/*    right: 0px;*/
+    
 }
 
 .SOP h2{
