@@ -20,7 +20,7 @@ from robotpy_ext.common_drivers import units, navx
 from robotpy_ext.autonomous import AutonomousModeSelector
 from components import statusUpdater as SU
 print (wpilib.__version__)
-from components import drive
+from components import drive, intake
 
 class MyRobot(wpilib.IterativeRobot):
 
@@ -63,8 +63,8 @@ class MyRobot(wpilib.IterativeRobot):
         self.stage3Right = ctre.WPI_TalonSRX(8)
 
         #Pan Arm Controls
-        self.leftPanArm = wpilib.PWMVictorSPX(1)
-        self.rightPanArm = wpilib.PWMVictorSPX(0)
+        self.leftPanArm = wpilib.PWMVictorSPX(0)
+        self.rightPanArm = wpilib.PWMVictorSPX(1)
 
         #Shifters
         self.shifter = wpilib.DoubleSolenoid(1,2)
@@ -83,18 +83,21 @@ class MyRobot(wpilib.IterativeRobot):
         self.rightDriveMotors = wpilib.SpeedControllerGroup(self.motor3,self.motor4)
         self.leftDriveMotors = wpilib.SpeedControllerGroup(self.motor1,self.motor2)
         self.robotDrive = DifferentialDrive(self.leftDriveMotors, self.rightDriveMotors)
-        self.rightLowerIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Right, self.stage2Right)
-        self.leftLowerIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage2Left)
-
+        self.lowerIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage1Right, self.stage2Left, self.stage2Right)
+        self.stage3 = wpilib.SpeedControllerGroup(self.stage3Left, self.stage3Right)
         if wpilib.SolenoidBase.getPCMSolenoidVoltageStickyFault(0) == True:
             wpilib.SolenoidBase.clearAllPCMStickyFaults(0)
         
         #Drive.py init
-        self.drive = drive.Drive(self.robotDrive, self.navx, self.motor1, self.motor3, self.shifter)
+        self.drive = drive.Drive(self.robotDrive, self.navx, self.motor1, self.motor4, self.shifter)
         
+        #Intake.py
+        self.intake = intake.Intake(self.lowerIntakeMotors, self.stage3, self.leftPanArm, self.rightPanArm)
+    
         #Auto mode variables
         self.components = {
-            'drive': self.robotDrive
+            'drive': self.drive,
+            'intake': self.intake
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
 
@@ -110,27 +113,11 @@ class MyRobot(wpilib.IterativeRobot):
     def teleopPeriodic(self):
         
         #Intake
-        if self.playerTwo.getTriggerAxis(0):
-            self.leftLowerIntakeMotors.set(-1)
-            self.rightLowerIntakeMotors.set(1)
-        elif self.playerTwo.getTriggerAxis(1):
-            self.rightLowerIntakeMotors.set(-1)
-            self.leftLowerIntakeMotors.set(1)
-        else:
-            self.rightLowerIntakeMotors.set(0)
-            self.leftLowerIntakeMotors.set(0)
-        if self.playerTwo.getAButton():
-            self.stage3Left.set(1)
-            self.stage3Right.set(-1)
-        elif self.playerTwo.getYButton():
-            self.stage3Left.set(-1)
-            self.stage3Right.set(1)
-        else:
-            self.stage3Left.set(0)
-            self.stage3Right.set(0)
+        self.intake.suck(self.playerTwo.getTriggerAxis(1) + self.playerTwo.getTriggerAxis(0) * -1)
+        
+        self.intake.ohShootDere(self.playerTwo.getYButton(), self.playerTwo.getAButton())
         #Pan Arms
-        self.rightPanArm.set(0.5 * self.playerTwo.getX(0))
-        self.leftPanArm.set(0.5 * self.playerTwo.getX(1))
+        self.intake.panArms(self.playerTwo.getX(0), self.playerTwo.getX(1), self.playerTwo.getStickButton(0))
 
         #Drive
         self.drive.driveMeBoi(self.playerOne.getX(0), self.playerOne.getY(0))
