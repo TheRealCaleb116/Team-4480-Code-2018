@@ -1,18 +1,52 @@
 #!/usr/bin/env python3
 #
-# Python3 Robot code: "Unititled" using Robotpy
-# 2018 - 2018, 4480 "Forty48ie" "UC-Botics"
-# This Code is protected by UC-Botics under the leadership of our profound and prominent
-# Senior Mechanical Engineer: Ethan Robertson and hereby stands as an inspirations to all
-# of us here to do great things.
+# Python3 Robot code: "Willie" using Robotpy 2018 - 2018, 4480 "Forty48ie" "UC-Botics" out of Upsala, Minnesota
+# This Code is protected by ROBBY ACT under the leadership of our profound and prominent Senior Mechanical Engineer: Ethan Robertson
+# and hereby stands as an inspirations to all of us here to do great things.
+#
+#
+#
+#
+#
 
 import wpilib
 import wpilib.buttons
 import ctre
 from wpilib.drive import DifferentialDrive
+import math
+import hal
+from networktables import NetworkTables
+from robotpy_ext.common_drivers import units, navx
+from robotpy_ext.autonomous import AutonomousModeSelector
+from components import statusUpdater as SU
+print (wpilib.__version__)
+from components import drive, intake
+
 class MyRobot(wpilib.IterativeRobot):
 
+    def disabledInit(self):
+        
+        #Update Allience
+        self.statUpdater.getAlliance()
+        
+        #Send Data to Networktable
+        self.statUpdater.UpdateStatus(0)
+        self.statUpdater.UpdateMatchTime()
+
+    def autonomousInit(self):
+        self.statUpdater.UpdateStatus(1)
+        self.statUpdater.UpdateMatchTime()
+   
+    def teleopInit(self):
+        self.statUpdater.UpdateStatus(2)
+        self.statUpdater.UpdateMatchTime()
+
     def robotInit(self):
+        #Networktables
+        self.netTable = NetworkTables.getTable('SmartDashboard')
+
+        #Hud Data Handlers
+        self.statUpdater = SU.StatusUpdater(self,self.netTable)
 
         #Drive Motors
         self.motor1 = ctre.WPI_TalonSRX(1)
@@ -21,40 +55,78 @@ class MyRobot(wpilib.IterativeRobot):
         self.motor4 = ctre.WPI_TalonSRX(10)
 
         #Intake Motors
-        self.stage1Left = ctre.WPI_TalonSRX(3)
-        self.stage1Right = ctre.WPI_TalonSRX(4)
-        self.stage2Left = ctre.WPI_TalonSRX(5)
-        self.stage2Right = ctre.WPI_TalonSRX(6)
-        self.stage3Left = ctre.WPI_TalonSRX(7)
+        self.stage1Left = ctre.WPI_TalonSRX(5)
+        self.stage1Right = ctre.WPI_TalonSRX(6)
+        self.stage2Left = ctre.WPI_TalonSRX(4)
+        self.stage2Right = ctre.WPI_TalonSRX(7)
+        self.stage3Left = ctre.WPI_TalonSRX(3)
         self.stage3Right = ctre.WPI_TalonSRX(8)
+
+        #Pan Arm Controls
+        self.leftPanArm = wpilib.PWMVictorSPX(0)
+        self.rightPanArm = wpilib.PWMVictorSPX(1)
 
         #Shifters
         self.shifter = wpilib.DoubleSolenoid(1,2)
         
         #User Inputs
-        self.xboxController = wpilib.XboxController(0)
-
+        self.playerOne = wpilib.XboxController(0)
+        self.playerTwo = wpilib.XboxController(1)
+        
+        #Navx
+        self.navx = navx.AHRS.create_spi()
+        
+        #Encoders
+        
+        
         #Setup Logic
         self.rightDriveMotors = wpilib.SpeedControllerGroup(self.motor3,self.motor4)
         self.leftDriveMotors = wpilib.SpeedControllerGroup(self.motor1,self.motor2)
         self.robotDrive = DifferentialDrive(self.leftDriveMotors, self.rightDriveMotors)
-        self.rightIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Right, self.stage2Right, self.stage3Right)
-        self.leftIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage2Left, self.stage3Left)
+        self.lowerIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage1Right, self.stage2Left, self.stage2Right)
+        self.stage3 = wpilib.SpeedControllerGroup(self.stage3Left, self.stage3Right)
+        if wpilib.SolenoidBase.getPCMSolenoidVoltageStickyFault(0) == True:
+            wpilib.SolenoidBase.clearAllPCMStickyFaults(0)
+        
+        #Drive.py init
+        self.drive = drive.Drive(self.robotDrive, self.navx, self.motor1, self.motor4, self.shifter)
+        
+        #Intake.py
+        self.intake = intake.Intake(self.lowerIntakeMotors, self.stage3, self.leftPanArm, self.rightPanArm)
+    
+        #Auto mode variables
+        self.components = {
+            'drive': self.drive,
+            'intake': self.intake
+        }
+        self.automodes = AutonomousModeSelector('autonomous', self.components)
+
+    def autonomousPeriodic(self):
+
+        #Hud Data Update
+        self.statUpdater.UpdateMatchTime()
+        self.statUpdater.UpdateBatteryStatus()
+        
+        #Run auto modes
+        self.automodes.run()
 
     def teleopPeriodic(self):
+        
+        #Intake
+        self.intake.suck(self.playerTwo.getTriggerAxis(1) + self.playerTwo.getTriggerAxis(0) * -1)
+        
+        self.intake.ohShootDere(self.playerTwo.getYButton(), self.playerTwo.getAButton())
+        #Pan Arms
+        self.intake.panArms(self.playerTwo.getX(0), self.playerTwo.getX(1), self.playerTwo.getStickButton(0))
 
         #Drive
-        self.robotDrive.arcadeDrive(self.xboxController.getX(0), self.xboxController.getY(0))
-
-        #Intake
-        self.rightIntakeMotors.set(self.xboxController.getY(1))
-        self.leftIntakeMotors.set(self.xboxController.getY(1))
+        self.drive.driveMeBoi(self.playerOne.getX(0), self.playerOne.getY(0))
 
         #Shifting
-        if self.xboxController.getAButtonPressed():
-            self.shifter.set(wpilib.DoubleSolenoid.Value.kForward)
-        if self.xboxController.getBButtonPressed():
-            self.shifter.set(wpilib.DoubleSolenoid.Value.kReverse)
+        if self.playerOne.getAButton():
+            self.drive.gearbox = True
+        elif self.playerOne.getBButton():
+            self.drive.gearbox = False
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
