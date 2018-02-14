@@ -23,9 +23,11 @@ print (wpilib.__version__)
 from components import drive, intake
 import time
 
+
 class MyRobot(wpilib.IterativeRobot):
 
     def disabledInit(self):
+
 
         #Update Allience
         self.statUpdater.getAlliance()
@@ -50,6 +52,12 @@ class MyRobot(wpilib.IterativeRobot):
         self.statUpdater.UpdateMatchTime()
         self.start=None
         self.drive.resetEncoders()
+        self.statUpdater.UpdateStatus(1)
+        self.statUpdater.UpdateMatchTime()
+
+    def teleopInit(self):
+        self.statUpdater.UpdateStatus(2)
+        self.statUpdater.UpdateMatchTime()
 
     def robotInit(self):
         #Networktables
@@ -78,6 +86,16 @@ class MyRobot(wpilib.IterativeRobot):
 
         #Shifters
         self.shifter = wpilib.DoubleSolenoid(1,2)
+
+        #User Inputs
+        self.playerOne = wpilib.XboxController(0)
+        self.playerTwo = wpilib.XboxController(1)
+
+        #Navx
+        self.navx = navx.AHRS.create_spi()
+
+        #Encoders
+
 
         #User Inputs
         self.playerOne = wpilib.XboxController(0)
@@ -122,9 +140,22 @@ class MyRobot(wpilib.IterativeRobot):
         #Run auto modes
         self.automodes.run()
 
-        print(time.time()-self.starter)
+
+        #Hud Data Update
+        self.statUpdater.UpdateMatchTime()
+        self.statUpdater.UpdateBatteryStatus()
+
+        #Run auto modes
+        self.automodes.run()
 
     def teleopPeriodic(self):
+
+        #Intake
+        self.intake.suck(self.playerTwo.getTriggerAxis(1) + self.playerTwo.getTriggerAxis(0) * -1)
+
+        self.intake.ohShootDere(self.playerTwo.getYButton(), self.playerTwo.getAButton())
+        #Pan Arms
+        self.intake.panArms(self.playerTwo.getX(0), self.playerTwo.getX(1), self.playerTwo.getStickButton(0))
 
         print (self.driverStation.getGameSpecificMessage())
 
@@ -148,13 +179,15 @@ class MyRobot(wpilib.IterativeRobot):
                 print ((((self.drive.getEncoders()[0]-self.startTics)/11243)/((time.time()-self.start)**2)))
                 print ((((self.drive.getEncoders()[0]-self.startTics)/13346)/((time.time()-self.start)**2)))
 
+        #Drive
+        self.drive.driveMeBoi(self.playerOne.getX(0), self.playerOne.getY(0))
+
         #Shifting
         if self.playerOne.getAButton():
             self.drive.gearbox = True
         elif self.playerOne.getBButton():
             self.drive.gearbox = False
 
-        #print (self.drive.getEncoders())
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)

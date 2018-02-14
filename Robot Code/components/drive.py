@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 import wpilib
+<<<<<<< HEAD
 import pathfinder as pf
 import math
+=======
+>>>>>>> master
 
 class Drive(object):
 
@@ -21,6 +24,7 @@ class Drive(object):
         turnController.setOutputRange(-.5, .5)
         turnController.setContinuous(True)
         self.turnController = turnController
+
 
         self.generatePath()
 
@@ -97,13 +101,15 @@ class Drive(object):
         return self.gyro.getYaw()
 
     def driveMeBoi(self, posX, posY): #current positions, X, Y
-        #print (self.gearbox)
         self.funcShifter()
         if self.turnController.isEnabled() and not self.turnController.onTarget():
             goRotation = self.rotate180
         else:
             self.pidEnabled(False)
             goRotation = posX
+
+        self.robotDrive.arcadeDrive(goRotation * -1, posY, True)
+
 
         self.robotDrive.arcadeDrive(goRotation * -1, posY, True)
 
@@ -124,12 +130,14 @@ class Drive(object):
         else:
             self.turnController.disable()
 
+
     def resetEncoders(self):
         self.lEncoder.setQuadraturePosition(0, 0)
         self.rEncoder.setQuadraturePosition(0, 0)
 
     def getEncoders(self):
         return (self.lEncoder.getQuadraturePosition(), self.rEncoder.getQuadraturePosition())
+
 
     def funcShifter(self):
         if self.gearbox == True:
