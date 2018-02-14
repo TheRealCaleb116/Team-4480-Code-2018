@@ -21,6 +21,7 @@ class Drive(object):
         turnController.setContinuous(True)
         self.turnController = turnController
 
+    '''
     def generatePath(self):
         points = [pf.Waypoint(0.0, 0.0, 0.0), pf.Waypoint(10.0, 0.0, 0.0)]
 
@@ -54,7 +55,7 @@ class Drive(object):
     def autoTankDrive(self):
 
         self.robotDrive.tankDrive(self.calculate('l'), self.calculate('r'))
-
+    '''
 
     def getYaw(self):
         return self.gyro.getYaw()
@@ -87,6 +88,10 @@ class Drive(object):
         else:
             self.turnController.disable()
 
+    def autonomousDriveForward(self, moveX, moveY, distance):
+        self.driveMeBoi(moveX, MoveY)
+        if self.lEncoder.getQuadraturePosition() > 8375 * distance:
+            self.driveMeBoi(0, 0)
     def resetEncoders(self):
         self.lEncoder.setQuadraturePosition(0, 0)
         self.rEncoder.setQuadraturePosition(0, 0)

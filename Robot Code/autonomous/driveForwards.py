@@ -15,7 +15,7 @@ class DriveForward(StatefulAutonomous):
     
     @timed_state(duration=1.5, next_state='stop')
     def drive_forward(self):
-         self.drive.driveMeBoi(0, -.5)
+         self.drive.autonomousDriveForward(0, -.5, 12)
 
 
     @state()

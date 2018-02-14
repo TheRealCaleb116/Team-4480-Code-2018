@@ -6,7 +6,7 @@ class Switch(StatefulAutonomous):
     MODE_NAME = 'Switch'
     
     def initialize(self):
-        self.fms.getFms()
+        pass
     
     @timed_state(duration=0.5, next_state='drive_forward', first=True)
     def drive_wait(self):
@@ -14,7 +14,8 @@ class Switch(StatefulAutonomous):
     
     @timed_state(duration=1.5, next_state='stop')
     def drive_forward(self):
-         self.drive.driveMeBoi(0, -.5)
+        if self.drive.getEncoders() > (10 * 11000, 10 * 13000):
+            self.drive.driveMeBoi(0, -.5)
 
 
     @state()

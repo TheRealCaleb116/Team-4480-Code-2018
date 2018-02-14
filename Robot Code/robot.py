@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 #
 # Python3 Robot code: "Willie" using Robotpy 2018 - 2018, 4480 "Forty48ie" "UC-Botics" out of Upsala, Minnesota
-# This Code is protected by ROBBY ACT under the leadership of our profound and prominent Senior Mechanical Engineer: Ethan Robertson
+# This Code is protected by ROBBY ACT under the leadership of our profound and prominent
+# Senior Mechanical Engineer: Ethan Robertson
 # and hereby stands as an inspirations to all of us here to do great things.
 #
-#
-#
-#
-#
+#  209369 tics / 25 feet = 8,375 tics/foot
+# -208692 tics / 25 feet = 8,348 tics/foot
+#  523
+#  1024
 
 import wpilib
 import wpilib.buttons
@@ -20,7 +21,7 @@ from robotpy_ext.common_drivers import units, navx
 from robotpy_ext.autonomous import AutonomousModeSelector
 from components import statusUpdater as SU
 print (wpilib.__version__)
-from components import drive, intake, fms
+from components import drive, intake
 import time
 import pathfinder as pf
 
@@ -38,7 +39,7 @@ class MyRobot(wpilib.IterativeRobot):
     def autonomousInit(self):
         self.statUpdater.UpdateStatus(1)
         self.statUpdater.UpdateMatchTime()
-        self.fms.getFms()
+        self.drive.resetEncoders()
     
     def teleopInit(self):
         self.statUpdater.UpdateStatus(2)
@@ -90,6 +91,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.robotDrive = DifferentialDrive(self.leftDriveMotors, self.rightDriveMotors)
         self.lowerIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage1Right, self.stage2Left, self.stage2Right)
         self.stage3 = wpilib.SpeedControllerGroup(self.stage3Left, self.stage3Right)
+
         if wpilib.SolenoidBase.getPCMSolenoidVoltageStickyFault(0) == True:
             wpilib.SolenoidBase.clearAllPCMStickyFaults(0)
         
@@ -99,14 +101,11 @@ class MyRobot(wpilib.IterativeRobot):
         #Intake.py
         self.intake = intake.Intake(self.lowerIntakeMotors, self.stage3, self.leftPanArm, self.rightPanArm)
     
-        #Fms.py
-        self.fms = fms.Fms()
-    
         #Auto mode variables
         self.components = {
             'drive': self.drive,
             'intake': self.intake,
-            'fms': self.fms
+            'statUpdater': self.statUpdater
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
 
@@ -123,8 +122,8 @@ class MyRobot(wpilib.IterativeRobot):
         
         #Intake
         self.intake.suck(self.playerTwo.getTriggerAxis(1) + self.playerTwo.getTriggerAxis(0) * -1)
-        
         self.intake.ohShootDere(self.playerTwo.getYButton(), self.playerTwo.getAButton())
+        
         #Pan Arms
         self.intake.panArms(self.playerTwo.getX(0), self.playerTwo.getX(1), self.playerTwo.getStickButton(0))
 
@@ -132,7 +131,6 @@ class MyRobot(wpilib.IterativeRobot):
         self.drive.driveMeBoi(self.playerOne.getX(0), self.playerOne.getY(0))
 
         # 11 fps
-        
         if self.playerOne.getXButtonPressed():
             if self.start == None:    
                 self.start = time.time()
@@ -147,7 +145,7 @@ class MyRobot(wpilib.IterativeRobot):
         elif self.playerOne.getBButton():
             self.drive.gearbox = False
 
-        #print (self.drive.getEncoders())
+        print (self.drive.getEncoders())
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
