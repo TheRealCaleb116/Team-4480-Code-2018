@@ -18,9 +18,9 @@ class Intake(object):
 
     def panArms(self, leftPanArmPos, rightPanArmPos, mode):
         if mode == True:
-            self.leftPanArm.set(leftPanArmPos)
-            self.rightPanArm.set(rightPanArmPos)
+            self.leftPanArm.set(leftPanArmPos * 0.5)
+            self.rightPanArm.set(rightPanArmPos * 0.5)
         else:
-            self.leftPanArm.set(leftPanArmPos)
-            self.rightPanArm.set(leftPanArmPos)
+            self.leftPanArm.set(leftPanArmPos * 0.5)
+            self.rightPanArm.set(leftPanArmPos * 0.5)
 

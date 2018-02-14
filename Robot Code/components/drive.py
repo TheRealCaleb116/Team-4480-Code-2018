@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import wpilib
+import pathfinder as pf
 
 class Drive(object):
 
@@ -20,10 +21,46 @@ class Drive(object):
         turnController.setContinuous(True)
         self.turnController = turnController
 
+    def generatePath(self):
+        points = [pf.Waypoint(0.0, 0.0, 0.0), pf.Waypoint(10.0, 0.0, 0.0)]
+
+        info, self.trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH, .05, 11.0, 18.0, 60.0)
+
+    def configurationSetup(self):
+
+        modifier = pf.modifiers.TankModifier(trajectory).modify(1.96)
+
+        left = modifier.getLeftTrajectory()
+        right = modifier.getRightTrajectory()
+
+        self.left_follower = pf.followers.EncoderFollower(left)
+        self.right_follower = pf.followers.EncoderFollower(right)
+
+        self.left_follower.configureEncoder(0, 11243, .5)
+        self.right_follower.configureEncoder(0, 13346, .5)
+        
+        self.left_follower.configurePIDVA(1.0, 0.0, 0.0, 1.0, 0)
+        self.right_follower.configurePIDVA(1.0, 0.0, 0.0, 1.0, 0)
+
+    def calculate(side):
+        if side=='r':
+            a = self.right_follower.calculate(self.rEncoder.getQuadraturePosition())
+            print (a)
+            print (self.right_follower.getSegment())
+            return a
+        elif side=='l':
+            return self.right_follower.calculate(self.lEncoder.getQuadraturePosition())
+        
+    def autoTankDrive(self):
+
+        self.robotDrive.tankDrive(self.calculate('l'), self.calculate('r'))
+
+
     def getYaw(self):
         return self.gyro.getYaw()
 
     def driveMeBoi(self, posX, posY): #current positions, X, Y
+        #print (self.gearbox)
         self.funcShifter()
         if self.turnController.isEnabled() and not self.turnController.onTarget():
             goRotation = self.rotate180
@@ -50,8 +87,12 @@ class Drive(object):
         else:
             self.turnController.disable()
 
+    def resetEncoders(self):
+        self.lEncoder.setQuadraturePosition(0, 0)
+        self.rEncoder.setQuadraturePosition(0, 0)
+
     def getEncoders(self):
-        return (self.lEncoder.getQuadratureVelocity(), self.rEncoder.getQuadratureVelocity())
+        return (self.lEncoder.getQuadraturePosition(), self.rEncoder.getQuadraturePosition())
 
     def funcShifter(self):
         if self.gearbox == True:

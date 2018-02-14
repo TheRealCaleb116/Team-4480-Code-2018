@@ -2,8 +2,8 @@ from robotpy_ext.autonomous import StatefulAutonomous, timed_state, state
 
 class DriveForward(StatefulAutonomous):
 
-    #DEFAULT = True
-    MODE_NAME = 'Drive Forward'
+    MODE_NAME = 'PathFinder'
+    DEFAULT = False
     
     def initialize(self):
         pass
@@ -13,10 +13,9 @@ class DriveForward(StatefulAutonomous):
          self.drive.driveMeBoi(0, 0)
 
     
-    @timed_state(duration=1.5, next_state='stop')
+    @timed_state(duration=10, next_state='stop')
     def drive_forward(self):
-         self.drive.driveMeBoi(0, -.5)
-
+         self.drive.autoTankDrive()
 
     @state()
     def stop(self):

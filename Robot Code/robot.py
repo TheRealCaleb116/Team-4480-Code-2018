@@ -20,7 +20,9 @@ from robotpy_ext.common_drivers import units, navx
 from robotpy_ext.autonomous import AutonomousModeSelector
 from components import statusUpdater as SU
 print (wpilib.__version__)
-from components import drive, intake
+from components import drive, intake, fms
+import time
+import pathfinder as pf
 
 class MyRobot(wpilib.IterativeRobot):
 
@@ -36,10 +38,13 @@ class MyRobot(wpilib.IterativeRobot):
     def autonomousInit(self):
         self.statUpdater.UpdateStatus(1)
         self.statUpdater.UpdateMatchTime()
-   
+        self.fms.getFms()
+    
     def teleopInit(self):
         self.statUpdater.UpdateStatus(2)
         self.statUpdater.UpdateMatchTime()
+        self.start=None
+        self.drive.resetEncoders()
 
     def robotInit(self):
         #Networktables
@@ -94,10 +99,14 @@ class MyRobot(wpilib.IterativeRobot):
         #Intake.py
         self.intake = intake.Intake(self.lowerIntakeMotors, self.stage3, self.leftPanArm, self.rightPanArm)
     
+        #Fms.py
+        self.fms = fms.Fms()
+    
         #Auto mode variables
         self.components = {
             'drive': self.drive,
-            'intake': self.intake
+            'intake': self.intake,
+            'fms': self.fms
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
 
@@ -122,11 +131,23 @@ class MyRobot(wpilib.IterativeRobot):
         #Drive
         self.drive.driveMeBoi(self.playerOne.getX(0), self.playerOne.getY(0))
 
+        # 11 fps
+        
+        if self.playerOne.getXButtonPressed():
+            if self.start == None:    
+                self.start = time.time()
+                self.startTics = self.drive.getEncoders()[0]
+            else:
+                print ((((self.drive.getEncoders()[0]-self.startTics)/11243)/((time.time()-self.start)**2)))
+                print ((((self.drive.getEncoders()[0]-self.startTics)/13346)/((time.time()-self.start)**2)))
+    
         #Shifting
         if self.playerOne.getAButton():
             self.drive.gearbox = True
         elif self.playerOne.getBButton():
             self.drive.gearbox = False
+
+        #print (self.drive.getEncoders())
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
