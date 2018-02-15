@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 import wpilib
-<<<<<<< HEAD
 import pathfinder as pf
 import math
-=======
->>>>>>> master
+
 
 class Drive(object):
 
@@ -37,9 +35,9 @@ class Drive(object):
         print ("resetted!!!")
 
     def generatePath(self):
-        points = [pf.Waypoint(0.0, 0.0, math.radians(0)), pf.Waypoint(15.0, 5.0, math.radians(0))]
+        points = [pf.Waypoint(0.0, 0.0, math.radians(0)), pf.Waypoint(20.0, -10.0, math.radians(0))]
 
-        info, self.trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH, .05, 17.0, 2.0, 10.0)
+        info, self.trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH, .01, 17.0, 32.0, 60.0)
 
     def configurationSetup(self):
 
@@ -51,19 +49,20 @@ class Drive(object):
         self.left_follower = pf.followers.EncoderFollower(left)
         self.right_follower = pf.followers.EncoderFollower(right)
 
-        self.left_follower.configureEncoder(0, 11243, .5)
-        self.right_follower.configureEncoder(0, 13346, .5)
+        self.left_follower.configureEncoder(0, 1024, .5)
+        self.right_follower.configureEncoder(0, 1024, .5)
 
-        self.left_follower.configurePIDVA(1.0, 0.0, 0.0, 1.0/17.0, 0)
-        self.right_follower.configurePIDVA(1.0, 0.0, 0.0, 1.0/17.0, 0)
+        self.left_follower.configurePIDVA(.8, 0.0, 0.0, 1.0/17.0, 0)
+        self.right_follower.configurePIDVA(.8, 0.0, 0.0, 1.0/17.0, 0)
 
         #print (self.trajectory)
 
     def calculate(self):
-        r = self.right_follower.calculate(self.rEncoder.getQuadraturePosition())
-        l = -1*self.left_follower.calculate(self.lEncoder.getQuadraturePosition())
+        r = -1*self.right_follower.calculate(self.rEncoder.getQuadraturePosition())
+        l = self.left_follower.calculate(self.lEncoder.getQuadraturePosition())
         if not self.right_follower.isFinished():
             currentAngle = self.getYaw()
+            print (currentAngle)
             desiredAngle = math.degrees(self.left_follower.getHeading())
 
             #print (math.degrees(self.left_follower.getHeading()))
@@ -73,7 +72,7 @@ class Drive(object):
 
             angle = .8*(-1.0/80.0)*angleDifference
 
-            print (angle, " left:", l, " right:", r)
+            print (currentAngle," calculated:",angle, " left:", l, " right:", r)
 
 
             return ((l+angle), (r-angle))

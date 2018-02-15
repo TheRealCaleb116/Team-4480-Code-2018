@@ -110,6 +110,8 @@ class MyRobot(wpilib.IterativeRobot):
         #Setup Logic
         self.rightDriveMotors = wpilib.SpeedControllerGroup(self.motor3,self.motor4)
         self.leftDriveMotors = wpilib.SpeedControllerGroup(self.motor1,self.motor2)
+        self.leftDriveMotors.setInverted(True)
+        
         self.robotDrive = DifferentialDrive(self.leftDriveMotors, self.rightDriveMotors)
         self.lowerIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage1Right, self.stage2Left, self.stage2Right)
         self.stage3 = wpilib.SpeedControllerGroup(self.stage3Left, self.stage3Right)
