@@ -94,8 +94,7 @@ class MyRobot(wpilib.IterativeRobot):
         #Navx
         self.navx = navx.AHRS.create_spi()
 
-        #Encoders
-
+        #Auto Path Setup
 
         #User Inputs
         self.playerOne = wpilib.XboxController(0)
@@ -127,6 +126,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.driverStation = wpilib.DriverStation.getInstance()
 
         #Auto mode variables
+
         self.components = {
             'drive': self.drive,
             'intake': self.intake

@@ -24,9 +24,8 @@ class Drive(object):
         self.turnController = turnController
 
 
-        self.generatePath()
 
-        self.configurationSetup()
+
 
     def resetPath(self):
         self.left_follower.reset()
@@ -34,13 +33,12 @@ class Drive(object):
 
         print ("resetted!!!")
 
-    def generatePath(self):
-        points = [pf.Waypoint(0.0, 0.0, math.radians(0)), pf.Waypoint(20.0, -10.0, math.radians(0))]
+    def generatePath(self, startX, startY, startRotation, endX, endY, endRotation):
+        points = [pf.Waypoint(startX, startY, math.radians(startRotation)), pf.Waypoint(endX, endY, math.radians(endRotation))]
 
         info, self.trajectory = pf.generate(points, pf.FIT_HERMITE_CUBIC, pf.SAMPLES_HIGH, .01, 17.0, 32.0, 60.0)
 
     def configurationSetup(self):
-
         modifier = pf.modifiers.TankModifier(self.trajectory).modify(1.96)
 
         left = modifier.getLeftTrajectory()
