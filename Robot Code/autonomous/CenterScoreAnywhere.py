@@ -8,7 +8,7 @@ import wpilib
 class CenterScoreAnywhere(StatefulAutonomous):
 
     MODE_NAME = 'CenterScoreAnywhere'
-    DEFAULT = False
+    DEFAULT = True
 
     def initialize(self):
         pass
@@ -18,7 +18,7 @@ class CenterScoreAnywhere(StatefulAutonomous):
         self.drive.resetGyro()
         self.drive.resetEncoders()
         self.drive.driveMeBoi(0, 0)
-        self.drive.setAutoSetpoint(100500)
+        self.drive.setAutoSetpoint(696.75*10.5) #969.75 tics/inch * Feet we want to go * 12 inches to make it feet
         if not wpilib.RobotBase.isSimulation():
             self.message = \
                 wpilib.DriverStation.getInstance().getGameSpecificMessage()
@@ -34,7 +34,7 @@ class CenterScoreAnywhere(StatefulAutonomous):
 
     @state()
     def decisionLeftRight(self):
-        self.drive.setAutoSetpoint(50000)
+        self.drive.setAutoSetpoint(69.75 * 64.5)
         if self.message[0].upper() == 'L':
             self.drive.setAutoTurn(-90)
             self.next_state('turn')
@@ -44,13 +44,40 @@ class CenterScoreAnywhere(StatefulAutonomous):
         else:
             print ('I did something wrong')
 
-    @timed_state(duration=4, next_state='stop')
+    @timed_state(duration=3, next_state='stop')
     def turn(self):
         self.drive.autoTurn.enable()
         self.drive.driveMeBoi(0, 0)
         if not self.drive.autoTurn.isEnabled():
+            self.next_state('offSetSwitch')
+
+    @timed_state(duration=5, next_state='stop')
+    def offSetSwitch(self):
+        self.drive.autoForward.enable()
+        self.drive.driveMeBoi(0, 0)
+        if not self.drive.autoForward.isEnabled():
             self.drive.resetEncoders()
-            self.drive.setAutoSetpoint(100000)
+            self.drive.setAutoSetpoint(696.75*3*12)
+            self.drive.resetGyro()
+            self.next_state('decisionAgain')
+    @state
+    def decisionAgain(self):
+        if self.message[0].upper() == 'L':
+            self.drive.setAutoTurn(90)
+            self.next_state('turnAgain')
+        elif self.message[0].upper() == 'R':
+            self.drive.setAutoTurn(-90)
+            self.next_state('turnAgain')
+        else:
+            print ('I did something wrong')
+
+
+    @timed_state(duration=4, next_state='stop')
+    def turnAgain(self):
+        self.drive.autoTurn.enable()
+        self.drive.driveMeBoi(0, 0)
+        if not self.drive.autoTurn.isEnabled():
+            self.drive.resetEncoders()
             self.next_state('approachSwitch')
 
     @timed_state(duration=3, next_state='stop')

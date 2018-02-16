@@ -4,6 +4,9 @@ Python3 Robot code: "Willie" using Robotpy 2018 - 2018, 4480 "Forty48ie" "UC-Bot
 This Code is protected by ROBBY ACT under the leadership of our profound and prominent
 Senior Mechanical Engineer: Ethan Robertson
 and hereby stands as an inspirations to all of us here to do great things.
+
+~ 696.75 tics per inch
+
 '''
 
 import wpilib
@@ -37,6 +40,9 @@ class MyRobot(wpilib.IterativeRobot):
 
         #Hud Data Handlers
         self.statUpdater = SU.StatusUpdater(self,self.netTable)
+
+        #Camera Server
+        wpilib.CameraServer.launch()
 
         #Drive Motors
         self.motor1 = ctre.WPI_TalonSRX(1)
