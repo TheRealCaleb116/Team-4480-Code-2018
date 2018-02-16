@@ -42,8 +42,8 @@ class PhysicsEngine(object):
         # encoders
         l = -(lf_motor + lr_motor) * 0.5 * speed
         r = (rf_motor + rr_motor) * 0.5 * speed
-        hal_data['CAN'][1]['quad_position'] += int(l*tm_diff*1024)
-        hal_data['CAN'][10]['quad_position'] += int(r*tm_diff*1024)
+        hal_data['CAN'][1]['quad_position'] += int(l*tm_diff*10240)
+        hal_data['CAN'][10]['quad_position'] += int(r*tm_diff*10240)
 
         speed, rotation = drivetrains.four_motor_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor, speed=speed)
         self.physics_controller.drive(speed, rotation, tm_diff)
