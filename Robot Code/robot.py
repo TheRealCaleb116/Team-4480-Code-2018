@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-#
-# Python3 Robot code: "Willie" using Robotpy 2018 - 2018, 4480 "Forty48ie" "UC-Botics" out of Upsala, Minnesota
-# This Code is protected by ROBBY ACT under the leadership of our profound and prominent Senior Mechanical Engineer: Ethan Robertson
-# and hereby stands as an inspirations to all of us here to do great things.
-#
-#
-#
-#
-#
+'''
+Python3 Robot code: "Willie" using Robotpy 2018 - 2018, 4480 "Forty48ie" "UC-Botics" out of Upsala, Minnesota
+This Code is protected by ROBBY ACT under the leadership of our profound and prominent
+Senior Mechanical Engineer: Ethan Robertson
+and hereby stands as an inspirations to all of us here to do great things.
+'''
 
 import wpilib
 import wpilib.buttons
@@ -21,24 +18,17 @@ from robotpy_ext.autonomous import AutonomousModeSelector
 from components import statusUpdater as SU
 print (wpilib.__version__)
 from components import drive, intake
+import time
 
 class MyRobot(wpilib.IterativeRobot):
 
     def disabledInit(self):
-        
+
         #Update Allience
         self.statUpdater.getAlliance()
-        
+
         #Send Data to Networktable
         self.statUpdater.UpdateStatus(0)
-        self.statUpdater.UpdateMatchTime()
-
-    def autonomousInit(self):
-        self.statUpdater.UpdateStatus(1)
-        self.statUpdater.UpdateMatchTime()
-   
-    def teleopInit(self):
-        self.statUpdater.UpdateStatus(2)
         self.statUpdater.UpdateMatchTime()
 
     def robotInit(self):
@@ -68,32 +58,45 @@ class MyRobot(wpilib.IterativeRobot):
 
         #Shifters
         self.shifter = wpilib.DoubleSolenoid(1,2)
-        
+
         #User Inputs
         self.playerOne = wpilib.XboxController(0)
         self.playerTwo = wpilib.XboxController(1)
-        
+
         #Navx
         self.navx = navx.AHRS.create_spi()
-        
-        #Encoders
-        
-        
+
+        #Auto Path Setup
+
+        #User Inputs
+        self.playerOne = wpilib.XboxController(0)
+        self.playerTwo = wpilib.XboxController(1)
+
+        #Navx
+        self.navx = navx.AHRS.create_spi()
+
+        #Points
+        self.points = []
+
         #Setup Logic
         self.rightDriveMotors = wpilib.SpeedControllerGroup(self.motor3,self.motor4)
         self.leftDriveMotors = wpilib.SpeedControllerGroup(self.motor1,self.motor2)
+        self.leftDriveMotors.setInverted(True)
         self.robotDrive = DifferentialDrive(self.leftDriveMotors, self.rightDriveMotors)
         self.lowerIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage1Right, self.stage2Left, self.stage2Right)
         self.stage3 = wpilib.SpeedControllerGroup(self.stage3Left, self.stage3Right)
         if wpilib.SolenoidBase.getPCMSolenoidVoltageStickyFault(0) == True:
             wpilib.SolenoidBase.clearAllPCMStickyFaults(0)
-        
+
         #Drive.py init
-        self.drive = drive.Drive(self.robotDrive, self.navx, self.motor1, self.motor4, self.shifter)
-        
+        self.drive = drive.Drive(self.robotDrive, self.navx, self.motor1, self.motor2, self.motor3, self.motor4, self.shifter, self.points)
+
         #Intake.py
         self.intake = intake.Intake(self.lowerIntakeMotors, self.stage3, self.leftPanArm, self.rightPanArm)
-    
+
+        #Driver Station Instance
+        self.driverStation = wpilib.DriverStation.getInstance()
+
         #Auto mode variables
         self.components = {
             'drive': self.drive,
@@ -101,23 +104,50 @@ class MyRobot(wpilib.IterativeRobot):
         }
         self.automodes = AutonomousModeSelector('autonomous', self.components)
 
+    def autonomousInit(self):
+
+        self.motor1.setNeutralMode(2)
+        self.motor2.setNeutralMode(2)
+        self.motor3.setNeutralMode(2)
+        self.motor4.setNeutralMode(2)
+
+        self.statUpdater.UpdateStatus(1)
+        self.statUpdater.UpdateMatchTime()
+        self.drive.resetEncoders()
+
     def autonomousPeriodic(self):
+        self.starter = time.time()
+        #Hud Data Update
+        self.statUpdater.UpdateMatchTime()
+        self.statUpdater.UpdateBatteryStatus()
+
+        #Run auto modes
+        self.automodes.run()
+
 
         #Hud Data Update
         self.statUpdater.UpdateMatchTime()
         self.statUpdater.UpdateBatteryStatus()
-        
+
         #Run auto modes
         self.automodes.run()
 
+    def teleopInit(self):
+        self.statUpdater.UpdateStatus(2)
+        self.statUpdater.UpdateMatchTime()
+        self.start=None
+        self.drive.resetEncoders()
+        self.statUpdater.UpdateStatus(1)
+        self.statUpdater.UpdateMatchTime()
+
     def teleopPeriodic(self):
-        
+
         #Intake
         self.intake.suck(self.playerTwo.getTriggerAxis(1) + self.playerTwo.getTriggerAxis(0) * -1)
-        
         self.intake.ohShootDere(self.playerTwo.getYButton(), self.playerTwo.getAButton())
+
         #Pan Arms
-        self.intake.panArms(self.playerTwo.getX(0), self.playerTwo.getX(1), self.playerTwo.getStickButton(0))
+        self.intake.panArms(self.playerTwo.getX(0), self.playerTwo.getX(1), not self.playerTwo.getStickButton(0))
 
         #Drive
         self.drive.driveMeBoi(self.playerOne.getX(0), self.playerOne.getY(0))
@@ -127,6 +157,10 @@ class MyRobot(wpilib.IterativeRobot):
             self.drive.gearbox = True
         elif self.playerOne.getBButton():
             self.drive.gearbox = False
+
+        #Console Messages
+        print (self.driverStation.getGameSpecificMessage())
+
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
