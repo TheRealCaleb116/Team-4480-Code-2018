@@ -1,3 +1,12 @@
+/*Globl Inherited Styles*/
+h1, h2{
+    font-family: arial;
+}
+
+.inlineDiv{
+    display: inline;
+}
+
 /*Generic Slide Out Popout*/
 
 .SOP{
@@ -10,10 +19,13 @@
     max-width: 300px;
     
     border-radius: 10px;
-    position: relative;
+    position: fixed;
+    
     
     /*Location*/
-    left: -250px;
+    right: -350px;
+/*    right: 0px;*/
+    
 }
 
 .SOP h2{
@@ -35,6 +47,11 @@
 }
 
 
+
+
+
+
+
 /*General styles*/
 img{
     width: 100%;
@@ -45,4 +62,37 @@ img{
    display: block; 
    height: 0; 
    clear: both;
+}
+
+/*Header*/
+div#header{
+    background-color: grey;
+    padding: 2px;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+
+div#header section{
+    display: block;
+    float: left;
+    background-color: lightgray;
+    padding: 10px 20px;
+    border: 2px solid black;
+    
+}
+section#team{
+    flex: 0 0 300px;
+
+}
+section#period{
+    flex: 1 1 400px;
+    
+}
+section#period h2{
+    padding-left: 10%;
+}
+section#timer{
+    flex: 0 1 250px;
+    text-align: center;
 }

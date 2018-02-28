@@ -4,26 +4,57 @@ import tornado.websocket
 import os
 
 import Handlers as WH
+from networktables import NetworkTables
 
-def CheckEvents():
-    pass
+#import py networktables bindings
+import pynetworktables2js.tornado_handlers as networkTablesToJS
+
+from multiprocessing import Process, Queue
+import RobotChecker as RC
+#default robotIP
+robotIP = "127.0.0.1"
+
+def InitNetworkTables():
+    print("Connecting to network tables")
+    NetworkTables.initialize(server=robotIP)
+
+def StartRobotChecker():
+    global Q
+    Q = Queue()
+
+    robotChecker = Process(target=RC.Start,args=(robotIP,Q))
+    #Start the sub process
+    robotChecker.start()
+
+def SubCheck():
+    if (Q.empty() == False):
+
+        for x in range(0, Q.qsize()):
+            msg = Q.get()
+            WH.EventSocket.AlertClients(msg)
 
 def ServerCreate():
     settings = {
         "static_path": os.path.join(os.path.dirname(__file__), "static")
     }
+    #startup networkTables for networktables2js
+    InitNetworkTables()
 
-    app = tornado.web.Application([
+
+    app = tornado.web.Application(networkTablesToJS.get_handlers() + [
         (r"/", WH.DefaultHandler),
         (r"/EventHandler", WH.EventSocket)
     ],**settings)
 
     app.listen(8888)
 
+    #start up robotchecker subprocess
+    StartRobotChecker()
+
     ioLoop = tornado.ioloop.IOLoop.current()
 
-    #run this function every 1000ms
-    #ioLoop.PeriodicCallback(CheckEvents,1000)
+    tornado.ioloop.PeriodicCallback(SubCheck,500).start()
+
 
     #start processing loop
     ioLoop.start()

@@ -17,7 +17,6 @@ class Drive(object):
         motor3,
         motor4,
         shifter,
-        points,
         ):
 
         self.lEncoder = motor1
@@ -47,7 +46,7 @@ class Drive(object):
 
         # this will for going forward in auto
 
-        autoForwardP = 0.02  # I have no idea if this is good enough
+        autoForwardP = 0.006
 
         autoForward = wpilib.PIDController(
             autoForwardP,
@@ -58,25 +57,25 @@ class Drive(object):
             output=self.autoForwardOutput,
             )
         autoForward.setInputRange(-250000, 250000.0)  # I don't know what to put for the input range
-        autoForward.setOutputRange(-1.0, 1.0)
+        autoForward.setOutputRange(-0.5, 0.5)
         autoForward.setContinuous(False)
-        autoForward.setPercentTolerance(.5)
+        autoForward.setPercentTolerance(1.5)
         self.autoForward = autoForward
 
-        autoP = 0.015
+        autoP = 0.006
 
         autoTurn = wpilib.PIDController(
             autoP,
             0,
-            0,
+            0.05,
             0,
             self.gyro,
             output=self.autoTurnOutput,
             )
         autoTurn.setInputRange(-180.0, 180.0)
-        autoTurn.setOutputRange(-.75, .75)
+        autoTurn.setOutputRange(-.5, .5)
         autoTurn.setContinuous(True)
-        autoTurn.setPercentTolerance(1)
+        autoTurn.setPercentTolerance(1.5)
         self.autoTurn = autoTurn
 
     def autoTurnOutput(self, output):
@@ -170,24 +169,22 @@ class Drive(object):
     def resetGyro(self):
         self.gyro.zeroYaw()
 
-    def autoTankDrive(self):
-        (l, r) = self.calculate()
-        self.robotDrive.tankDrive(l, r)
+   # def autoTankDrive(self):
+    #    (l, r) = self.calculate()
+     #   self.robotDrive.tankDrive(l, r)
 
     def getYaw(self):
         return self.gyro.getYaw()
 
     def driveMeBoi(self, posX, posY):  # current positions, X, Y
         self.funcShifter()
-
         if self.turnController.isEnabled() \
             and not self.turnController.onTarget():
             self.autoForward.disable()
             self.autoTurn.disable()
-            self.robotDrive.arcadeDrive(self.rotate180 * -1, posY, True)
+            self.robotDrive.arcadeDrive(self.rotate180 * -1, posY, False)
         elif self.autoForward.isEnabled() \
             and not self.autoForward.onTarget():
-
             self.turnController.disable()
             self.autoTurn.disable()
             self.robotDrive.arcadeDrive(0, self.forwardVelocity, False)
@@ -195,12 +192,12 @@ class Drive(object):
 
             self.turnController.disable()
             self.autoForward.disable()
-            self.robotDrive.arcadeDrive(self.autoTurnVelocity, 0, False)
+            self.robotDrive.arcadeDrive(self.autoTurnVelocity * -1, 0, False)
         else:
             self.turnController.disable()
             self.autoForward.disable()
             self.autoTurn.disable()
-            self.robotDrive.arcadeDrive(posX * -1, posY, True)
+            self.robotDrive.arcadeDrive(posX * -1, posY, False)
 
     def blackbox(self, output):
         self.rotate180 = output

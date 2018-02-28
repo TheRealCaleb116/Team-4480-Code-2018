@@ -21,7 +21,9 @@ class EventSocket(tornado.websocket.WebSocketHandler):
 
 
     @classmethod
-    def AlertClients(cls, label, value):
+    def AlertClients(cls,value):
         #send event to all open clients
+        print("Sending Event MSG: " + value)
+
         for socket in cls.eSockets:
-            Socket.write_message(label + ":" + value)
+            socket.write_message(value)
