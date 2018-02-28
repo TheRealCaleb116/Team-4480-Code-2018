@@ -35,6 +35,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.statUpdater.UpdateMatchTime()
 
     def robotInit(self):
+
         #Networktables
         self.netTable = NetworkTables.getTable('SmartDashboard')
 
@@ -65,6 +66,10 @@ class MyRobot(wpilib.IterativeRobot):
         #Shifters
         self.shifter = wpilib.DoubleSolenoid(1,2)
 
+        #Climb
+        self.pto = wpilib.DoubleSolenoid(3,4)
+        self.climbLift = wpilib.Solenoid(5)
+
         #User Inputs
         self.playerOne = wpilib.XboxController(0)
         self.playerTwo = wpilib.XboxController(1)
@@ -82,20 +87,28 @@ class MyRobot(wpilib.IterativeRobot):
         self.navx = navx.AHRS.create_spi()
 
         #Points
-        self.points = []
+        #self.points = []
 
         #Setup Logic
         self.rightDriveMotors = wpilib.SpeedControllerGroup(self.motor3,self.motor4)
+
         self.leftDriveMotors = wpilib.SpeedControllerGroup(self.motor1,self.motor2)
+
         self.leftDriveMotors.setInverted(True)
+
         self.robotDrive = DifferentialDrive(self.leftDriveMotors, self.rightDriveMotors)
+
         self.lowerIntakeMotors = wpilib.SpeedControllerGroup(self.stage1Left, self.stage1Right, self.stage2Left, self.stage2Right)
+
         self.stage3 = wpilib.SpeedControllerGroup(self.stage3Left, self.stage3Right)
+
         if wpilib.SolenoidBase.getPCMSolenoidVoltageStickyFault(0) == True:
             wpilib.SolenoidBase.clearAllPCMStickyFaults(0)
 
+        self.pto.set(wpilib.DoubleSolenoid.Value.kReverse)
+
         #Drive.py init
-        self.drive = drive.Drive(self.robotDrive, self.navx, self.motor1, self.motor2, self.motor3, self.motor4, self.shifter, self.points)
+        self.drive = drive.Drive(self.robotDrive, self.navx, self.motor1, self.motor2, self.motor3, self.motor4, self.shifter)
 
         #Intake.py
         self.intake = intake.Intake(self.lowerIntakeMotors, self.stage3, self.leftPanArm, self.rightPanArm)
@@ -121,15 +134,18 @@ class MyRobot(wpilib.IterativeRobot):
         self.statUpdater.UpdateMatchTime()
         self.drive.resetEncoders()
 
+        self.drive.gearbox = True
+
+
     def autonomousPeriodic(self):
         self.starter = time.time()
+
         #Hud Data Update
         self.statUpdater.UpdateMatchTime()
         self.statUpdater.UpdateBatteryStatus()
 
         #Run auto modes
         self.automodes.run()
-
 
         #Hud Data Update
         self.statUpdater.UpdateMatchTime()
@@ -139,14 +155,25 @@ class MyRobot(wpilib.IterativeRobot):
         self.automodes.run()
 
     def teleopInit(self):
+        self.motor1.setNeutralMode(1)
+        self.motor2.setNeutralMode(1)
+        self.motor3.setNeutralMode(1)
+        self.motor4.setNeutralMode(1)
         self.statUpdater.UpdateStatus(2)
         self.statUpdater.UpdateMatchTime()
         self.start=None
         self.drive.resetEncoders()
         self.statUpdater.UpdateStatus(1)
         self.statUpdater.UpdateMatchTime()
+        self.drive.autoForward.disable()
+        self.drive.autoTurn.disable()
+        self.drive.turnController.disable()
+        self.drive.resetGyro()
 
     def teleopPeriodic(self):
+
+        print(self.drive.getYaw())
+        mult = 0.5 + (self.playerOne.getTriggerAxis(1) * 0.5)
 
         #Intake
         self.intake.suck(self.playerTwo.getTriggerAxis(1) + self.playerTwo.getTriggerAxis(0) * -1)
@@ -156,7 +183,11 @@ class MyRobot(wpilib.IterativeRobot):
         self.intake.panArms(self.playerTwo.getX(0), self.playerTwo.getX(1), not self.playerTwo.getStickButton(0))
 
         #Drive
-        self.drive.driveMeBoi(self.playerOne.getX(0), self.playerOne.getY(0))
+
+        if self.pto.get() == wpilib.DoubleSolenoid.Value.kForward:
+            self.robotDrive.tankDrive(self.playerOne.getY(1), self.playerOne.getY(0))
+        else:
+            self.drive.driveMeBoi(self.playerOne.getX(1) * 0.7, (self.playerOne.getY(0) * mult))
 
         #Shifting
         if self.playerOne.getAButton():
@@ -164,9 +195,19 @@ class MyRobot(wpilib.IterativeRobot):
         elif self.playerOne.getBButton():
             self.drive.gearbox = False
 
-        #Console Messages
-        print (self.driverStation.getGameSpecificMessage())
+        #FlipFlip
+        if self.playerOne.getBumperPressed(0) == True:
+            self.drive.flipflip()
 
+        #Climb Mechanism
+
+        if self.playerOne.getStartButton() == True:
+            self.climbLift.set(True)
+        elif self.playerOne.getYButton() == True:
+            self.pto.set(wpilib.DoubleSolenoid.Value.kForward)
+            self.climbLift.set(False)
+        elif self.playerOne.getXButton() == True:
+            self.pto.set(wpilib.DoubleSolenoid.Value.kReverse)
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
