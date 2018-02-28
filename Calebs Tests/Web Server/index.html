@@ -6,26 +6,62 @@
     <meta charset="utf-8" />
 
     <link href="static/reset.css" rel="stylesheet">
-    <link href="/static/Hud.css" rel="stylesheet">
-    <script src="/static/eventHandler.js" defer></script>
+    <link href="static/Hud.css" rel="stylesheet">
 
+    <!--Connect To Py Networktables-->
+    <script src="/networktables/networktables.js"></script>
+
+    <!--Get JQuery-->
+    <script src="static/jquery-3.2.1.min.js"></script>
+    
+    <!--Get My Scripts-->
+    <script src="static/eventHandler.js" defer></script>
+    <script src="static/Hud.js" defer></script>
+    
+    
 </head>
 
 <body>
-    <div class="SOP clearfix" id="templatePopup">
-        <h2>This is a template Popup / Event</h2>
-        <p>
-            Your something is doing something that triggered this  event.
-        </p>
+    <div id="header" class="clearfix">
+        <section id="team">
+            <h1>Team 4480 - <div class="inlineDiv" id="allianceValue">(Blank)</div> Alliance</h1>
+        </section>
+        <section id="period">
+            
+            <h2>Game Period: <div class="inlineDiv"  id="periodValue">Unknown</div></h2>
+        </section>
+        <section id="timer">
+            <h2 id="timerValue">(MatchTime)</h2>
+        </section>
         
-        <p>
-            <img src="static/IMG/Battery%20Icon.jpg"/>
-        </p>
     </div>
     
     
+    <div class="SOP clearfix" id="autoPopup">
+        <h2>Autonomous Mode Activated!</h2>
+        <p>
+            The robot is currently In Autonomous Mode. Please wait for the Mode to switch before opperating.
+        </p>
+        
+        <p>
+            <img src="static/IMG/Alert.ico"/>
+        </p>
+    </div>
     
+
+    
+    
+<!--
     Other stuff
+    <button onclick="trigger(0,'True')">E1 True</button> <br>
+    <button onclick="trigger(0,'False')">E1 False</button><br>
+    
+    <button onclick="trigger(1,'True')">E2 True</button><br>
+    <button onclick="trigger(1,'False')">E2 False</button><br>
+    
+    <button onclick="trigger(2,'True')">E3 True</button><br>
+    <button onclick="trigger(2,'False')">E3 False</button><br>
+-->
 </body>
 
 </html>

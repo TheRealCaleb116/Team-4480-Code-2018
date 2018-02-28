@@ -19,9 +19,10 @@ from networktables import NetworkTables
 from robotpy_ext.common_drivers import units, navx
 from robotpy_ext.autonomous import AutonomousModeSelector
 from components import statusUpdater as SU
-print (wpilib.__version__)
+
+#HUD Imports
+from components import statusUpdater as SU
 from components import drive, intake
-import time
 
 class MyRobot(wpilib.IterativeRobot):
 
@@ -92,6 +93,9 @@ class MyRobot(wpilib.IterativeRobot):
         #Setup Logic
         self.rightDriveMotors = wpilib.SpeedControllerGroup(self.motor3,self.motor4)
 
+        #Hud DataHandlers
+        self.statUpdater = SU.StatusUpdater(self,self.netTable)
+
         self.leftDriveMotors = wpilib.SpeedControllerGroup(self.motor1,self.motor2)
 
         self.leftDriveMotors.setInverted(True)
@@ -138,20 +142,10 @@ class MyRobot(wpilib.IterativeRobot):
 
 
     def autonomousPeriodic(self):
-        self.starter = time.time()
-
         #Hud Data Update
         self.statUpdater.UpdateMatchTime()
         self.statUpdater.UpdateBatteryStatus()
 
-        #Run auto modes
-        self.automodes.run()
-
-        #Hud Data Update
-        self.statUpdater.UpdateMatchTime()
-        self.statUpdater.UpdateBatteryStatus()
-
-        #Run auto modes
         self.automodes.run()
 
     def teleopInit(self):
@@ -159,12 +153,14 @@ class MyRobot(wpilib.IterativeRobot):
         self.motor2.setNeutralMode(1)
         self.motor3.setNeutralMode(1)
         self.motor4.setNeutralMode(1)
+
         self.statUpdater.UpdateStatus(2)
         self.statUpdater.UpdateMatchTime()
         self.start=None
         self.drive.resetEncoders()
-        self.statUpdater.UpdateStatus(1)
+
         self.statUpdater.UpdateMatchTime()
+
         self.drive.autoForward.disable()
         self.drive.autoTurn.disable()
         self.drive.turnController.disable()
@@ -178,6 +174,11 @@ class MyRobot(wpilib.IterativeRobot):
         #Intake
         self.intake.suck(self.playerTwo.getTriggerAxis(1) + self.playerTwo.getTriggerAxis(0) * -1)
         self.intake.ohShootDere(self.playerTwo.getYButton(), self.playerTwo.getAButton())
+
+        #Data Updaters
+        self.statUpdater.UpdateBatteryStatus()
+        self.statUpdater.UpdateMatchTime();
+
 
         #Pan Arms
         self.intake.panArms(self.playerTwo.getX(0), self.playerTwo.getX(1), not self.playerTwo.getStickButton(0))
