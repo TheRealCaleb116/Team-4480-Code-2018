@@ -18,7 +18,6 @@ import hal
 from networktables import NetworkTables
 from robotpy_ext.common_drivers import units, navx
 from robotpy_ext.autonomous import AutonomousModeSelector
-from components import statusUpdater as SU
 
 #HUD Imports
 from components import statusUpdater as SU
@@ -93,8 +92,6 @@ class MyRobot(wpilib.IterativeRobot):
         #Setup Logic
         self.rightDriveMotors = wpilib.SpeedControllerGroup(self.motor3,self.motor4)
 
-        #Hud DataHandlers
-        self.statUpdater = SU.StatusUpdater(self,self.netTable)
 
         self.leftDriveMotors = wpilib.SpeedControllerGroup(self.motor1,self.motor2)
 
@@ -156,10 +153,10 @@ class MyRobot(wpilib.IterativeRobot):
 
         self.statUpdater.UpdateStatus(2)
         self.statUpdater.UpdateMatchTime()
+        
         self.start=None
         self.drive.resetEncoders()
 
-        self.statUpdater.UpdateMatchTime()
 
         self.drive.autoForward.disable()
         self.drive.autoTurn.disable()
@@ -176,7 +173,7 @@ class MyRobot(wpilib.IterativeRobot):
 
         #Data Updaters
         self.statUpdater.UpdateBatteryStatus()
-        self.statUpdater.UpdateMatchTime();
+        self.statUpdater.UpdateMatchTime()
 
 
         #Pan Arms
