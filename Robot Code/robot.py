@@ -168,7 +168,6 @@ class MyRobot(wpilib.IterativeRobot):
 
     def teleopPeriodic(self):
 
-        print(self.drive.getYaw())
         mult = 0.5 + (self.playerOne.getTriggerAxis(1) * 0.5)
 
         #Intake

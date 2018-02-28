@@ -2,16 +2,9 @@ from robotpy_ext.autonomous import StatefulAutonomous, timed_state, state
 
 class DriveForward(StatefulAutonomous):
 
-'''
-This was changed frantically in Nevis.
-The NavX PIDS are not 100% and kind've scare me right now. This will be updated in the next few days to just driveforward and then decide whether or not to spit it out.
-Then on practice day, I'll try messing with pids.
-'''
-
-
     DEFAULT = False
     MODE_NAME = 'Forward Score'
-    
+
     def initialize(self):
         self.drive.setAutoSetpoint(696.75*6*12)
         self.drive.resetEncoders()
