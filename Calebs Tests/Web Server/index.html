@@ -16,8 +16,6 @@
     <script src="/networktables/networktables.js"></script>
     <script src="/networktables/utils.js"></script>
     
-
-    
     <!--Get My Scripts-->
     <script src="static/eventHandler.js" defer></script>
     <script src="static/Hud.js" defer></script>
@@ -30,19 +28,28 @@
         <section id="team">
             <h1>Team 4480 - <div class="inlineDiv" id="allianceValue">(Blank)</div> Alliance</h1>
         </section>
+        
         <section id="period">
             
             <h2>Game Period: <div class="inlineDiv"  id="periodValue">Unknown</div></h2>
         </section>
+                   
+        <section id="Selector">
+            <h2>AutoSelector</h2>
+            <select id="AutonomousSelector"></select>
+        </section>
+        
+        
         <section id="timer">
             <h2 id="timerValue">(MatchTime)</h2>
         </section>
-        
+
     </div>
     
-    <div id="Selector">
-        <h2>Autonomous Selector</h2>
-        <select id="AutonomousSelector"></select>
+    <!--The MJPEG stream goes in here-->
+    <div id="Stream">
+        <!--Change the src-->
+        <img id="streamImg" src="static/IMG/TestImage.png"/>
     </div>
     
     

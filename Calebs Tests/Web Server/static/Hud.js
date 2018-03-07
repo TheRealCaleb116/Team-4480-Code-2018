@@ -1,4 +1,24 @@
 $(document).ready(function () {
+    sizeImgToHeight();
+    
+    $(window).resize(sizeImgToHeight);
+    
+    function sizeImgToHeight(){
+        $("#streamImg").width("100%");
+        $("#streamImg").height("auto");
+        var windowHeight = $(window).height();
+        var headerHeight = $("#header").height();
+        var imgHeight = $("#streamImg").height();
+
+
+        //Img has extended beyond window width
+        if (imgHeight > (windowHeight - headerHeight) - 20){
+            $("#streamImg").width("auto");
+            $("#streamImg").height((windowHeight - headerHeight) - 20);
+
+        }
+    }
+    
     attachSelectToSendableChooser("#AutonomousSelector", "/SmartDashboard/Autonomous Mode");
     
     NetworkTables.addWsConnectionListener(function (connected) {
