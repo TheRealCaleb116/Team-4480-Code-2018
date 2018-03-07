@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import wpilib
-import pathfinder as pf
+#import pathfinder as pf
 import math
 
 

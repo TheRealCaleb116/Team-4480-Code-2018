@@ -96,3 +96,19 @@ section#timer{
     flex: 0 1 250px;
     text-align: center;
 }
+
+#AutonomousSelector{
+    padding:  px;
+    width: 150px;
+}
+
+#Selector{
+    padding: 5px;
+    display: inline-block;
+    position: fixed;
+    bottom: 100px;
+    right: 10px;
+    background-color: lightgray;
+    border: 2px solid black;
+
+}

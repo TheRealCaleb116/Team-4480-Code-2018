@@ -7,29 +7,16 @@ import multiprocessing
 
 
 def Check(source, key, value, isNew):
-
-    if (key == "batteryVoltage"):
-        Battery(value)
-    elif (key == "GamePeriod"):
+    print(value)
+    if (key == "GamePeriod"):
         GamePeriod(value)
 
 
-#Handlers
-def Battery(value):
-    global BatteryOut
 
-    if (value <= 10):
-        if (BatteryOut == False):
-            queue.put("Battery:True")
-            BatteryOut = True
-    else:
-        if (BatteryOut == True):
-            queue.put("Battery:False")
-            BatteryOut = False
 
 def GamePeriod(value):
     global inAuto
-    
+
     if (value == "Autonomous"):
         queue.put("AutonomousPopup:True")
         inAuto = True
