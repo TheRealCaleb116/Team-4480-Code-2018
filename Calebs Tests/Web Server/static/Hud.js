@@ -1,5 +1,6 @@
 $(document).ready(function () {
-
+    attachSelectToSendableChooser("#AutonomousSelector", "/SmartDashboard/Autonomous Mode");
+    
     NetworkTables.addWsConnectionListener(function (connected) {
         /*
                 console.log("Connected to websocket. DATA: " + connected);
