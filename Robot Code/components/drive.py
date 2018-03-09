@@ -178,11 +178,9 @@ class Drive(object):
 
     def driveMeBoi(self, posX, posY):  # current positions, X, Y
         self.funcShifter()
-        if self.turnController.isEnabled() \
-            and not self.turnController.onTarget():
-            self.autoForward.disable()
+        if self.turnController.isEnabled() and self.autoForward.isEnabled() and not self.autoForward.onTarget():
             self.autoTurn.disable()
-            self.robotDrive.arcadeDrive(self.rotate180 * -1, posY, False)
+            self.robotDrive.arcadeDrive(self.rotate180 * -1, self.forwardVelocity, False)
         elif self.autoForward.isEnabled() \
             and not self.autoForward.onTarget():
             self.turnController.disable()

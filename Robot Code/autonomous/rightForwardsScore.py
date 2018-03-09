@@ -11,11 +11,13 @@ class DriveForward(StatefulAutonomous):
     @timed_state(duration=0.5, next_state='drive_forward', first=True)
     def drive_wait(self):
          self.drive.driveMeBoi(0, 0)
+         self.drive.setPoint(self.drive.getYaw())
          self.drive.gearbox = True
 
     @timed_state(duration=3, next_state='waitForCoast')
     def drive_forward(self):
         self.drive.autoForward.enable()
+        self.drive.turnController.enable()
         self.drive.driveMeBoi(0, 0)
         if not self.drive.autoForward.isEnabled():
             self.next_state('waitForCoast')
