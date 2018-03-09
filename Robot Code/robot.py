@@ -34,6 +34,7 @@ class MyRobot(wpilib.IterativeRobot):
         self.statUpdater.UpdateStatus(0)
         self.statUpdater.UpdateMatchTime()
 
+
     def robotInit(self):
 
         #Networktables
@@ -77,7 +78,7 @@ class MyRobot(wpilib.IterativeRobot):
         #Navx
         self.navx = navx.AHRS.create_spi()
 
-        #Auto Path Setup
+        self.power_board = wpilib.PowerDistributionPanel()
 
         #User Inputs
         self.playerOne = wpilib.XboxController(0)
@@ -153,7 +154,7 @@ class MyRobot(wpilib.IterativeRobot):
 
         self.statUpdater.UpdateStatus(2)
         self.statUpdater.UpdateMatchTime()
-        
+
         self.start=None
         self.drive.resetEncoders()
 
@@ -205,6 +206,9 @@ class MyRobot(wpilib.IterativeRobot):
             self.climbLift.set(False)
         elif self.playerOne.getXButton() == True:
             self.pto.set(wpilib.DoubleSolenoid.Value.kReverse)
+
+        for channel in range(15):
+            print ("Channel "+str(channel)+": "+str(self.power_board.getCurrent(channel))+" Amps")    
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
