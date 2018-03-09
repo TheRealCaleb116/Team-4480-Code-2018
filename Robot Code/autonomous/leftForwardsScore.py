@@ -4,8 +4,8 @@ import wpilib
 
 class DriveForward(StatefulAutonomous):
 
-    DEFAULT = True
-    MODE_NAME = 'Right Forward Score (No Turning)'
+    DEFAULT = False
+    MODE_NAME = 'Left Forward Score (No Turning)'
 
     def initialize(self):
         self.drive.setAutoSetpoint(909.25*8*12)
@@ -20,7 +20,7 @@ class DriveForward(StatefulAutonomous):
             self.message = \
                 wpilib.DriverStation.getInstance().getGameSpecificMessage()
         else:
-            self.message = "L"
+            self.message = "R"
 
     @timed_state(duration=3, next_state='waitForCoast')
     def drive_forward(self):
@@ -36,7 +36,7 @@ class DriveForward(StatefulAutonomous):
 
     @timed_state(duration=0.5, next_state='stop')
     def decision(self):
-        if self.message[0].upper() == 'R':
+        if self.message[0].upper() == 'L':
             self.next_state('ohShootDere')
         else:
             self.next_state('stop')

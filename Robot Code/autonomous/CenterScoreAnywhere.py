@@ -8,7 +8,7 @@ import wpilib
 class CenterScoreAnywhere(StatefulAutonomous):
 
     MODE_NAME = 'CenterScoreAnywhere'
-    DEFAULT = True
+    DEFAULT = False
 
     def initialize(self):
         self.drive.resetGyro()
@@ -17,7 +17,7 @@ class CenterScoreAnywhere(StatefulAutonomous):
     def drive_wait(self):
         self.drive.gearbox = False
         self.drive.driveMeBoi(0, 0)
-        self.drive.setAutoSetpoint(696.75*4*12) #696.75 tics/inch * Feet we want to go * 12 inches to make it feet
+        self.drive.setAutoSetpoint(909.25*4*12) #696.75 tics/inch * Feet we want to go * 12 inches to make it feet
         if not wpilib.RobotBase.isSimulation():
             self.message = \
                 wpilib.DriverStation.getInstance().getGameSpecificMessage()
@@ -33,7 +33,7 @@ class CenterScoreAnywhere(StatefulAutonomous):
 
     @state()
     def decisionLeftRight(self):
-        self.drive.setAutoSetpoint(69.75*64.5)
+        self.drive.setAutoSetpoint(909.25*64.5)
         if self.message[0].upper() == 'R':
             self.drive.setAutoTurn(-90)
             self.next_state('turn')

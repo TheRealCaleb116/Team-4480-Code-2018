@@ -6,7 +6,7 @@ class DriveForward(StatefulAutonomous):
     MODE_NAME = 'Drive Forward'
     
     def initialize(self):
-        self.drive.setAutoSetpoint(696.75*10.5*12)
+        self.drive.setAutoSetpoint(909.25*12.5*12) # old 696.75
 
     @timed_state(duration=0.5, next_state='drive_forward', first=True)
     def drive_wait(self):
