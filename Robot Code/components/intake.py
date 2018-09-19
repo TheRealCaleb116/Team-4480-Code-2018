@@ -14,7 +14,7 @@ class Intake(object):
         self.lowerIntakeMotors.set(iSpeed ** 3)
 
     def ohShootDere(self, Output, Input):
-        self.stage3.set((Output + Input * -1) * 0.4)
+        self.stage3.set((Output + Input * -1))
 
     def panArms(self, leftPanArmPos, rightPanArmPos, mode):
         if mode == True:

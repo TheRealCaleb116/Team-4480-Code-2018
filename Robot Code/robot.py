@@ -181,24 +181,9 @@ class MyRobot(wpilib.IterativeRobot):
         self.intake.panArms(self.playerTwo.getX(0), self.playerTwo.getX(1), not self.playerTwo.getStickButton(0))
 
         #Drive
-
-        if self.pto.get() == wpilib.DoubleSolenoid.Value.kForward:
-            self.robotDrive.tankDrive(self.playerOne.getY(1), self.playerOne.getY(0))
-        else:
-            self.drive.driveMeBoi(self.playerOne.getX(1) * 0.7, (self.playerOne.getY(0) * mult))
-
-        #Shifting
-        if self.playerOne.getAButton():
-            self.drive.gearbox = True
-        elif self.playerOne.getBButton():
-            self.drive.gearbox = False
-
-        #FlipFlip
-        if self.playerOne.getBumperPressed(0) == True:
-            self.drive.flipflip()
+        self.drive.driveMeBoi(self.playerOne.getY(0) * -1, (self.playerOne.getX(1))  * -0.7)
 
         #Climb Mechanism
-
         if self.playerOne.getStartButton() == True:
             self.climbLift.set(True)
         elif self.playerOne.getYButton() == True:
@@ -207,8 +192,6 @@ class MyRobot(wpilib.IterativeRobot):
         elif self.playerOne.getXButton() == True:
             self.pto.set(wpilib.DoubleSolenoid.Value.kReverse)
 
-        for channel in range(15):
-            print ("Channel "+str(channel)+": "+str(self.power_board.getCurrent(channel))+" Amps")    
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
